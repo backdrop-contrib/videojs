@@ -1,0 +1,6 @@
+; $Id$
+name = VideoJS
+description = VideoJS is an HTML5 Video Player with 3 core parts: An embed code (Video for Everybody), a Javascript library (video.js), and a pure HTML/CSS skin (video-js.css).
+package = Video
+core = 6.x
+dependencies[] = filefield

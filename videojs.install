@@ -1,0 +1,36 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * Installation file for videojs module.
+ */
+
+/**
+ * Implementation of hook_requirements().
+ */
+function videojs_requirements($phase) {
+  $requirements = array();
+
+  if ($phase == 'runtime') {
+    $requirements['videojs']['title'] = t('videojs');
+    if ($videojs_version = videojs_get_version()) {
+      $requirements['videojs']['value'] = $videojs_version;
+      $requirements['videojs']['severity'] = REQUIREMENT_OK;
+    }
+    else {
+      $requirements['videojs']['value'] = t('Not found');
+      $requirements['videojs']['description'] = t('Missing the videojs library. Please <a href="!url">download videojs</a> and extract it into the %directory directory.', array('!url' => url('http://videojs.com'), '%directory' => variable_get('videojs_directory', 'sites/all/libraries/video-js')));
+      $requirements['videojs']['severity'] = REQUIREMENT_ERROR;
+    }
+  }
+
+  return $requirements;
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function videojs_uninstall() {
+  //variable_del('videojs_compression_type');
+}
