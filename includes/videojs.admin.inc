@@ -21,7 +21,7 @@ function videojs_settings_form() {
 
   $form['options'] = array(
     '#type' => 'fieldset',
-    '#title' => t('videojs options'),
+    '#title' => t('VideoJS Options'),
     '#collapsible' => FALSE,
   );
 
@@ -30,6 +30,18 @@ function videojs_settings_form() {
     '#title' => t('Auto-play files on page load'),
     '#description' => t('Use caution when combining this option with multiple players on the same page.'),
     '#default_value' => variable_get('videojs_autoplay', ''),
+  );
+
+  $form['options']['videojs_width'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Player width'),
+    '#default_value' => variable_get('videojs_width', 640),
+  );
+  
+  $form['options']['videojs_height'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Player width'),
+    '#default_value' => variable_get('videojs_height', 264),
   );
 
   $form = system_settings_form($form);

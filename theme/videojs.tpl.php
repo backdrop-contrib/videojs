@@ -8,7 +8,7 @@
  <!-- Begin VideoJS -->
   <div class="video-js-box" id="<?php print $player_id; ?>">
     <!-- Using the Video for Everybody Embed Code http://camendesign.com/code/video_for_everybody -->
-    <video id="<?php print $player_id; ?>" class="video-js" width="640" height="264" controls="controls" preload="auto" poster="">
+    <video id="<?php print $player_id; ?>" class="video-js" width="<?php print(variable_get('videojs_width', 640))?>" height="<?php print(variable_get('videojs_height', 264))?>" controls="controls" preload="auto" poster="">
       <?php foreach ($items as $item):?>
       <?php $filepath = file_create_url($item['filepath']); ?>
         <?php if($item['filemime'] == 'video/mp4') ?>
