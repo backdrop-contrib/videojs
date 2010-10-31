@@ -15,7 +15,7 @@
           <source src="<?=$filepath?>" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"' />
         <?php if($item['filemime'] == 'application/octet-stream') ?>
           <source src="<?=$filepath?>" type='video/webm; codecs="vp8, vorbis"' />
-        <?php if($item['filemime'] == 'application/ogg') ?>
+        <?php if($item['filemime'] == 'application/ogg' || $item['filemime'] == 'video/ogg') ?>
           <source src="<?=$filepath?>" type='video/ogg; codecs="theora, vorbis"' />
       <?php endforeach; ?>
       <!-- Flash Fallback. Use any flash video player here. Make sure to keep the vjs-flash-fallback class. -->
