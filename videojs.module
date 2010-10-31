@@ -38,7 +38,7 @@ function videojs_theme() {
       'template' => 'theme/videojs',
       'file' => 'includes/videojs.theme.inc',
     ),
-    'videojs_view_playlist' => array(
+    'videojs_view' => array(
       'arguments' => array('view' => NULL, 'items' => NULL),
       'template' => 'theme/videojs',
       'file' => 'includes/videojs.theme.inc',
