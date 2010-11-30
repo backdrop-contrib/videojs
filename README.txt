@@ -28,6 +28,9 @@ Install
 6) Create a piece of content with the configured field. Give the file a
    description that will be used as the file label in the playlist.
 
+7) Create poster image, install the filefield image and create field named
+   videojs_poster (which is, as you know, internally field_videojs_poster)
+
 Support
 -------
 

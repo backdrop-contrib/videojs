@@ -19,6 +19,11 @@ function template_preprocess_videojs_formatter_videojs(&$vars) {
     $vars['items'][] = $item;
   }
   $vars['player_id'] = 'videojs-' . $vars['element']['#node']->nid . '-' . str_replace('_', '-', $vars['element']['#field_name']);
+    // Grab any poster image from a field named videojs_poster
+  if (!empty($node->field_videojs_poster)) {
+    $image = $node->field_videojs_poster[0]; // take the first image from videojs_poster field
+    $vars['poster'] = file_create_url($image['filepath']);
+  }
 }
 
 /**
