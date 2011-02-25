@@ -1,4 +1,3 @@
-// $Id$
 
 Note that this CSS is NOT a good thing to leave as-is and should almost
 definitely be overridden in your theme. Rather than leaving the videojs.css

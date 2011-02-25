@@ -1,6 +1,5 @@
 <?php
 
-// $Id$
 
 /**
  * Theme and preprocess functions for the videojs module.
