@@ -12,7 +12,7 @@
     <?php static $videojs_sources; ?>
     <?php $codecs = array('video/mp4' => 'avc1.42E01E, mp4a.40.2', 'video/webm' => 'vp8, vorbis', 'video/ogg' => 'theora, vorbis', 'video/quicktime' => 'avc1.42E01E, mp4a.40.2'); ?>
     <?php foreach ($items as $item): ?>
-    <?php $filepath = file_create_url($item['filepath']); ?>
+    <?php $filepath = file_create_url($item['uri']); ?>
     <?php $mimetype = $item['filemime']; ?>
     <?php if (array_key_exists($mimetype, $codecs)): ?>
     <?php $mimetype = ($mimetype == 'video/quicktime') ? 'video/mp4' : $mimetype; ?>
