@@ -1,6 +1,5 @@
 <?php
 
-
 /**
  * @file
  * Provides an HTML5-compatible with Flash-fallback video player.
@@ -15,7 +14,7 @@
 function videojs_menu() {
   $items = array();
 
-  $items['admin/settings/videojs'] = array(
+  $items['admin/config/media/videojs'] = array(
     'title' => 'VideoJS Settings',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('videojs_settings_form'),
@@ -33,7 +32,7 @@ function videojs_menu() {
 function videojs_theme() {
   return array(
     'videojs_formatter_videojs' => array(
-      'arguments' => array('element' => NULL),
+      'variables' => array('items' => NULL, 'player_id' => NULL, 'mode' => NULL),
       'template' => 'theme/videojs',
       'file' => 'includes/videojs.theme.inc',
     ),
@@ -62,11 +61,31 @@ function videojs_field_formatter_info() {
   return array(
     'videojs' => array(
       'label' => t('VideoJS : HTML5 Video Player'),
-      'field types' => array('filefield', 'uploadfield'),
-      'multiple values' => CONTENT_HANDLE_MULTIPLE,
+      'field types' => array('file', 'video', 'media'),
       'description' => t('Display a video file as an HTML5-compatible with Flash-fallback video player.'),
     )
   );
+}
+
+/**
+ * Implements hook_field_formatter_view().
+ */
+function videojs_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  $element = array();
+  list($id, $vid, $bundle) = entity_extract_ids($entity_type, $entity);
+
+  switch ($display['type']) {
+    case 'videojs':
+      $element = array(
+        '#theme' => 'videojs',
+        '#items' => $items,
+        '#player_id' => 'videojs-' . $id . '-' . str_replace('_', '-', $instance['field_name']),
+      );
+      break;
+  }
+  $element['#attached'] = jplayer_add(FALSE);
+
+  return $element;
 }
 
 /**
@@ -92,7 +111,6 @@ function videojs_add($add = TRUE) {
     $videojs_js = drupal_get_path('module', 'videojs') . '/theme/videojs.js';
     $videojs_css = drupal_get_path('module', 'videojs') . '/theme/videojs.css';
     $settings = array('videojs' => array(
-        'swfPath' => base_path() . variable_get('videojs_directory', 'sites/all/libraries/video-js'),
         'autoPlay' => (int) variable_get('videojs_autoplay', ''),
         ));
     if ($add) {
@@ -101,7 +119,7 @@ function videojs_add($add = TRUE) {
       drupal_add_js($videojs_js);
       drupal_add_css($videojs_css);
       if (!$added) {
-        drupal_add_js($settings, 'setting');
+        drupal_add_js($settings, array('type' => 'setting'));
         $added = TRUE;
       }
     }

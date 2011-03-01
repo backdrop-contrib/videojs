@@ -1,6 +1,5 @@
 <?php
 
-
 /**
  * @file
  * Display style plugin for Views that renders rows as a videojs.
@@ -95,40 +94,21 @@ class videojs_style_plugin extends views_plugin_style {
         $file = db_fetch_object(db_query("SELECT filepath FROM {files} WHERE fid = %d", $fileid));
         $filepath = $file->filepath;
         $this->view->row_index = $row_index;
-        $label = trim(strip_tags($this->row_plugin->render($row)));
-        if (empty($label)) {
-          $label = basename($filepath);
-        }
         // get the file path from the file object
 
         $items[] = array(
-          'url' => file_create_url($filepath),
-          'label' => $label,
+          'uri' => $filepath,
+          'description' => trim(strip_tags($this->row_plugin->render($row))),
         );
       }
     }
-
-    $output = theme('videojs_view_playlist', $view, $items);
-
-    // If doing a live preview, add the JavaScript directly to the output.
-    if (isset($view->live_preview) && $view->live_preview) {
-      $js = drupal_add_js();
-      $settings = array();
-      foreach ($js['setting'] as $js_settings) {
-        if (isset($js_settings['videojs'])) {
-          $settings = $js_settings['videojs'];
-          break;
-        }
-      }
-
-      $output .= "<script type=\"text/javascript\">\n";
-      $output .= "Drupal.settings.videojs = Drupal.settings.videojs || {};\n";
-      $output .= "jQuery.extend(Drupal.settings.videojs, " . drupal_to_js($settings) . ");\n";
-      $output .= "</script>\n";
-    }
-
-    unset($view->row_index);
-    return $output;
+    $view->rows = array(
+      '#theme' => 'videojs',
+      '#items' => $items,
+      '#player_id' => 'videojs-view-' . str_replace('_', '-', $view->name),
+      '#attached' => videojs_add(FALSE),
+    );
+    return drupal_render($view->rows);
   }
 
   // Because we don't provide templates, but Views may complain when visiting
