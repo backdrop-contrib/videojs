@@ -13,7 +13,6 @@ function template_preprocess_videojs(&$vars) {
   foreach ($vars['items'] as $delta => $item) {
     $vars['items'][$delta]['url'] = file_create_url($item['uri']);
     $vars['items'][$delta]['label'] = $item['description'] ? $item['description'] : $item['filename'];
-    $vars['items'][$delta]['class'] = implode(' ', $classes);
   }
 }
 
