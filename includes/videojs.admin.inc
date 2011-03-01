@@ -36,7 +36,7 @@ function videojs_settings_form() {
     '#title' => t('Player width'),
     '#default_value' => variable_get('videojs_width', 640),
   );
-  
+
   $form['options']['videojs_height'] = array(
     '#type' => 'textfield',
     '#title' => t('Player height'),
