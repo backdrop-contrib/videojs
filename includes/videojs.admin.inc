@@ -15,7 +15,7 @@ function videojs_settings_form() {
     '#type' => 'textfield',
     '#title' => t('videojs file directory'),
     '#default_value' => variable_get('videojs_directory', 'sites/all/libraries/video-js'),
-    '#description' => t('Specify the path that contains the videojs library. The videojs.player.min.js file should be in the root of this directory.'),
+    '#description' => t('Specify the path that contains the videojs library. The videojs.js file should be in the root of this directory.'),
   );
 
   $form['options'] = array(
