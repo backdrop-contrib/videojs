@@ -29,6 +29,8 @@ function template_preprocess_videojs(&$vars) {
 
   $count = count($vars['items']);
   $number = 0;
+  // poster image
+  $vars['poster'] = NULL;
   foreach ($vars['items'] as $delta => $item) {
     // Skip unplayable items.
     if (!isset($codecs[$item['filemime']])) {
