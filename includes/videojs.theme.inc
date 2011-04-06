@@ -8,6 +8,7 @@
  * Preprocess function for videojs.tpl.php when using a playlist.
  */
 function template_preprocess_videojs(&$vars) {
+  videojs_add();
   // TODO : add those settings to the admin
   $codecs = array(
     'video/mp4' => array(
