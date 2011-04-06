@@ -32,12 +32,12 @@ function videojs_menu() {
 function videojs_theme() {
   return array(
     'videojs' => array(
-      'variables' => array('items' => NULL, 'player_id' => NULL, 'mode' => NULL),
+      'variables' => array('items' => NULL, 'player_id' => NULL, 'attributes' => NULL),
       'template' => 'theme/videojs',
       'file' => 'includes/videojs.theme.inc',
     ),
     'videojs_view' => array(
-      'variables' => array('items' => NULL, 'player_id' => NULL, 'mode' => NULL),
+      'variables' => array('items' => NULL, 'player_id' => NULL, 'attributes' => NULL),
       'template' => 'theme/videojs',
       'file' => 'includes/videojs.theme.inc',
     ),

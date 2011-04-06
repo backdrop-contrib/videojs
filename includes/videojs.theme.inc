@@ -22,8 +22,9 @@ function template_preprocess_videojs(&$vars) {
     'application/ogg' => 'video/ogg; codec="theora, vorbis"',
     'video/quicktime' => 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"'
   );
-  $vars['width'] = variable_get('videojs_width', 640);
-  $vars['height'] = variable_get('videojs_height', 264);
+  // set the width and height
+  $vars['width'] = !empty($vars['attributes']['width']) ? $vars['attributes']['width'] : variable_get('videojs_width', 640);
+  $vars['height'] = !empty($vars['attributes']['height']) ? $vars['attributes']['height'] : variable_get('videojs_height', 264);
   $items_mp4 = array();
   $items_others = array();
 
