@@ -2,9 +2,9 @@
 api = 2
 core = 7.x
 
-projects[video-js][type] = library
-projects[video-js][type] = "libraries"
-projects[video-js][download][type] = "git"
-projects[video-js][download][url] = "https://github.com/zencoder/video-js.git"
+projects[videojs][type] = library
+projects[videojs][type] = "libraries"
+projects[videojs][download][type] = "git"
+projects[videojs][download][url] = "https://github.com/zencoder/video-js.git"
 
 projects[libraries] = 2
