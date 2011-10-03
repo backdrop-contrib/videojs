@@ -58,7 +58,8 @@ function template_preprocess_videojs(&$vars) {
         $item['videotype'] = $codecs['video/mp4'][0]['type']; // dimensions info not exist, assign default
       }
       $items_mp4[] = $item;
-    } else {
+    }
+    else {
       $item['videotype'] = $codecs[$item['filemime']];
       $items_others[] = $item;
     }
@@ -118,7 +119,8 @@ function _videojs_flashplayer($url, $width, $height, $poster = NULL) {
       );
     }
     return swf($url, $options);
-  } elseif (module_exists('flowplayer')) {
+  }
+  elseif (module_exists('flowplayer')) {
     // kjh: use a playlist to display the thumbnail if not auto playing
     if ($poster) {
       $options = array('playlist' => array($poster,
@@ -128,7 +130,8 @@ function _videojs_flashplayer($url, $width, $height, $poster = NULL) {
           ),
         ),
       );
-    } else {
+    }
+    else {
       $options = array(
         'clip' => array('url' => urlencode($url),
           'autoPlay' => FALSE,
@@ -136,11 +139,9 @@ function _videojs_flashplayer($url, $width, $height, $poster = NULL) {
         ),
       );
     }
-    return theme(
-        'flowplayer',
-        $options,
-        'vjs-flash-fallback',
-        array('style' => 'width:' . $width . 'px;height:' . $height + 24 . 'px;')
+    return theme('flowplayer', array('config' => $options, 'id' => 'vjs-flash-fallback',
+          'attributes' => array('style' => 'width:' . $width . 'px;height:' . $height + 24 . 'px;')
+            )
     );
   }
 }
