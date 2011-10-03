@@ -5,19 +5,20 @@
  */
 
 (function ($) {
+  Drupal.behaviors.videojs = {
+    attach: function() {
+      // Must come after the video.js library
 
-  // Must come after the video.js library
+      // Add VideoJS to all video tags on the page when the DOM is ready
+      VideoJS.setupAllWhenReady();
 
-  // Add VideoJS to all video tags on the page when the DOM is ready
-  VideoJS.setupAllWhenReady();
+    /* ============= OR ============ */
 
-/* ============= OR ============ */
+    // Setup and store a reference to the player(s).
+    // Must happen after the DOM is loaded
+    // You can use any library's DOM Ready method instead of VideoJS.DOMReady
 
-// Setup and store a reference to the player(s).
-// Must happen after the DOM is loaded
-// You can use any library's DOM Ready method instead of VideoJS.DOMReady
-
-/*
+    /*
     VideoJS.DOMReady(function(){
 
       // Using the video's ID or element
@@ -35,11 +36,11 @@
     });
     */
 
-/* ========= SETTING OPTIONS ========= */
+    /* ========= SETTING OPTIONS ========= */
 
-// Set options when setting up the videos. The defaults are shown here.
+    // Set options when setting up the videos. The defaults are shown here.
 
-/*
+    /*
     VideoJS.setupAllWhenReady({
       controlsBelow: false, // Display control bar below video instead of in front of
       controlsHiding: true, // Hide controls when mouse is not over the video
@@ -49,9 +50,9 @@
     });
     */
 
-// Or as the second option of VideoJS.setup
+    // Or as the second option of VideoJS.setup
 
-/*
+    /*
     VideoJS.DOMReady(function(){
       var myPlayer = VideoJS.setup("example_video_1", {
         // Same options
@@ -59,5 +60,6 @@
     });
     */
 
-
+    }
+  }
 })(jQuery);
