@@ -139,7 +139,7 @@ function _videojs_flashplayer($url, $width, $height, $poster = NULL) {
       );
     }
     return theme('flowplayer', array('config' => $options, 'id' => 'vjs-flash-fallback',
-          'attributes' => array('style' => 'width:' . $width . 'px;height:' . $height + 24 . 'px;')
+          'attributes' => array('style' => 'width:' . $width . 'px;height:' . ($height + 24) . 'px;')
             )
     );
   }
