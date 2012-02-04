@@ -39,6 +39,12 @@ if (!empty($items)): ?>
 <?php endif; ?>
     </object>
 <?php endif; ?>
+    <div class="vjs-no-video">
+      <strong>Download video:</strong>
+<?php foreach ($items as $item): ?>
+      <a href="<?php echo check_plain(file_create_url($item['uri'])) ?>"><?php echo strtoupper(str_replace('video/', '', $item['filemime'])); ?></a>,
+<?php endforeach; ?>
+    </div>
   </video>
 </div>
 <?php endif;
