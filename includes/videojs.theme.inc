@@ -110,22 +110,7 @@ function template_preprocess_videojs_view(&$vars) {
  *  $poster - url to the poster image
  */
 function _videojs_flashplayer($url, $width, $height, $poster = NULL) {
-  if (module_exists('swftools')) {
-    $options = array(
-      'params' => array(
-        'width' => $width,
-        'height' => $height,
-      ),
-    );
-    if ($poster) {
-      $options['othervars'] = array(
-        //@todo: swftools bug, can't enable this until they fix their pathing for the images.
-        'image' => $poster,
-      );
-    }
-    return swf($url, $options);
-  }
-  elseif (module_exists('flowplayer')) {
+  if (module_exists('flowplayer')) {
     // kjh: use a playlist to display the thumbnail if not auto playing
     if ($poster) {
       $options = array('playlist' => array($poster,
