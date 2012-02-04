@@ -42,7 +42,7 @@ function videojs_settings_form() {
     '#title' => t('Player height'),
     '#default_value' => variable_get('videojs_height', 264),
   );
-  $options = array(0 => 'Defaul', 'tube-css' => 'Youtube', 'vim-css' => 'Vimeo', 'hu-css' => 'Hulu');
+  $options = array(0 => 'Default', 'tube-css' => 'Youtube', 'vim-css' => 'Vimeo', 'hu-css' => 'Hulu');
   $form['options']['videojs_skin'] = array(
     '#type' => 'select',
     '#title' => t('Player skin'),
