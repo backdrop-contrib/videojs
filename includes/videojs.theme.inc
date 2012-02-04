@@ -75,14 +75,13 @@ function template_preprocess_videojs(&$vars) {
       break;
     }
   }
-  if (!isset($vars['flash'])) {
+  if (!isset($vars['flash']) && !empty($items_mp4)) {
     $vars['flash'] = file_create_url($items_mp4[0]['uri']);
   }
 
-  $flash_player = _videojs_flashplayer($vars['flash'], $vars['width'], $vars['height'], $vars['poster']);
-  $vars['flash_player'] = NULL;
-  if (isset($flash_player))
-    $vars['flash_player'] = $flash_player;
+  if (empty($vars['flash_player']) && !empty($vars['flash'])) {
+    $vars['flash_player'] = _videojs_flashplayer($vars['flash'], $vars['width'], $vars['height'], $vars['poster']);
+  } 
 }
 
 /**

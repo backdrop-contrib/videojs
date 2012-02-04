@@ -9,9 +9,9 @@
       <?php endforeach; ?>
       <!-- Flash Fallback. Use any flash video player here. Make sure to keep the vjs-flash-fallback class. -->
       <?php
-      if (isset($flash_player)):
+      if (!empty($flash_player)):
         print($flash_player);
-      else:
+      elseif(!empty($flash)):
         ?>
         <object class="vjs-flash-fallback" width="<?php print($width) ?>" height="<?php print($height) ?>" type="application/x-shockwave-flash"
                 data="http://releases.flowplayer.org/swf/flowplayer-3.2.5.swf">
