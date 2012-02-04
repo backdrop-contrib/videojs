@@ -18,7 +18,7 @@ if (!empty($items)): ?>
     <source src="<?php print(file_create_url($item['uri'])) ?>" type="<?php print check_plain($item['videotype']) ?>" />
 <?php endforeach; ?>
 <?php if (!empty($flash_player)): ?>
-    <div class="vjs-flash-fallback"><?php echo $flash_player; ?></div>
+    <?php echo $flash_player; ?>
 <?php elseif(!empty($flash)): ?>
     <object class="vjs-flash-fallback" width="<?php print($width) ?>" height="<?php print($height) ?>" type="application/x-shockwave-flash" data="http://releases.flowplayer.org/swf/flowplayer-3.2.5.swf">
       <param name="movie" value="http://releases.flowplayer.org/swf/flowplayer-3.2.5.swf" />

@@ -67,9 +67,6 @@ function template_preprocess_videojs(&$vars) {
       $item['videotype'] = $codecs[$item['filemime']];
       $items_others[] = $item;
     }
-    // ------
-//    $vars['items'][$delta]['url'] = file_create_url($item['uri']);
-//    $vars['items'][$delta]['label'] = $item['description'] ? $item['description'] : $item['filename'];
   }
 
   // Special treatment for 'video/flv', if one is exist use it as flash fallback, otherwise first mp4
@@ -84,7 +81,7 @@ function template_preprocess_videojs(&$vars) {
   }
 
   if (empty($vars['flash_player']) && !empty($vars['flash'])) {
-    $vars['flash_player'] = _videojs_flashplayer($vars['flash'], $vars['width'], $vars['height'], $vars['poster']);
+    $vars['flash_player'] = _videojs_flashplayer($vars['flash'], $vars['width'], $vars['height'], $vars['poster'], $vars['player_id']);
   }
 
   $vars['items'] = array_merge($items_mp4, $items_others); // mp4 listed first
@@ -109,7 +106,7 @@ function template_preprocess_videojs_view(&$vars) {
  *
  *  $poster - url to the poster image
  */
-function _videojs_flashplayer($url, $width, $height, $poster = NULL) {
+function _videojs_flashplayer($url, $width, $height, $poster = NULL, $player_id) {
   if (module_exists('flowplayer')) {
     // kjh: use a playlist to display the thumbnail if not auto playing
     if ($poster) {
@@ -129,9 +126,13 @@ function _videojs_flashplayer($url, $width, $height, $poster = NULL) {
         ),
       );
     }
-    return theme('flowplayer', array('config' => $options, 'id' => 'vjs-flash-fallback',
-          'attributes' => array('style' => 'width:' . $width . 'px;height:' . ($height + 24) . 'px;')
-            )
-    );
+    return theme('flowplayer', array(
+      'config' => $options,
+      'id' => $player_id .'-flowplayer',
+      'attributes' => array(
+        'style' => 'width: '. $width .'px; height: '. ($height + 24) .'px;',
+        'class' => 'vjs-flash-fallback',
+      ),
+    ));
   }
 }
