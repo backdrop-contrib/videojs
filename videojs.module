@@ -112,9 +112,9 @@ function videojs_add($add = TRUE) {
         'autoPlay' => (int) variable_get('videojs_autoplay', ''),
         ));
     if ($add) {
-      drupal_add_js($filepath);
+      drupal_add_js($filepath, array('group' => JS_LIBRARY));
       drupal_add_css($filepath_css);
-      drupal_add_js($videojs_js);
+      drupal_add_js($videojs_js, array('group' => JS_DEFAULT));
       drupal_add_css($videojs_css);
       if (!$added) {
         drupal_add_js($settings, array('type' => 'setting'));
@@ -123,16 +123,16 @@ function videojs_add($add = TRUE) {
     }
     $return = array(
       'js' => array(
-        array('data' => $filepath),
-        array('data' => $videojs_js),
+        $filepath => array('group' => JS_LIBRARY),
+        $videojs_js => array('group' => JS_DEFAULT),
         array('data' => $settings, 'type' => 'setting'),
       ),
       'css' => array(
-        array('data' => $filepath_css),
-        array('data' => $videojs_css),
-        array('data' => $directory . '/skins/hu.css'),
-        array('data' => $directory . '/skins/tube.css'),
-        array('data' => $directory . '/skins/vim.css'),
+        $filepath_css,
+        $videojs_css,
+        $directory .'/skins/hu.css',
+        $directory .'/skins/tube.css',
+        $directory .'/skins/vim.css',
       ),
     );
   }
