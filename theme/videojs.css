@@ -148,7 +148,7 @@ li.vjs-fullscreen-control ul li:nth-child(4) { border-bottom: 6px solid #fff; bo
 ---------------------------------------------------------*/
 div.vjs-big-play-button {
   display: none; /* Start hidden */
-  position: absolute; top: 50%; left: 50%; width: 80px; height: 80px; margin: -40px 0 0 -40px; z-index: 1003; text-align: center; vertical-align: center; cursor: pointer !important;
+  position: absolute; top: 50%; left: 50%; width: 80px; height: 80px; margin: -40px 0 0 -40px; z-index: 499; text-align: center; vertical-align: center; cursor: pointer !important;
   border: 3px solid #fff; opacity: 0.9;
   border-radius: 20px; -webkit-border-radius: 20px; -moz-border-radius: 20px;
 
