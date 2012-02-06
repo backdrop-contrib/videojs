@@ -23,7 +23,7 @@ if (!empty($items)): ?>
     <object class="vjs-flash-fallback" width="<?php print($width) ?>" height="<?php print($height) ?>" type="application/x-shockwave-flash" data="http://releases.flowplayer.org/swf/flowplayer-3.2.5.swf">
       <param name="movie" value="http://releases.flowplayer.org/swf/flowplayer-3.2.5.swf" />
       <param name="allowfullscreen" value="true" />
-      <param name="flashvars" value="config={'playlist': [ <?php if(isset($poster)) print("'".$poster."',"); ?> {'url': '<?php print($flash) ?>', 'autoPlay':false, 'autoBuffering':true} ]}" />
+      <param name="flashvars" value="config={'playlist': [ <?php if(isset($poster)) print("'".$poster."',"); ?> {'url': '<?php print($flash) ?>', 'autoPlay':false, 'autoBuffering':true, 'scaling':'fit'} ]}" />
       <embed id="flash-<?php print $player_id; ?>"
                  name="flash-<?php print $player_id; ?>"
                  src="http://releases.flowplayer.org/swf/flowplayer-3.2.5.swf"
@@ -32,7 +32,7 @@ if (!empty($items)): ?>
                  type="application/x-shockwave-flash"
                  allowscriptaccess='always'
                  allowfullscreen='true'
-                 flashvars="config={'playlist': [ <?php if(isset($poster)) print("'".$poster."',"); ?> {'url': '<?php print($flash) ?>', 'autoPlay':false, 'autoBuffering':true} ]}"
+                 flashvars="config={'playlist': [ <?php if(isset($poster)) print("'".$poster."',"); ?> {'url': '<?php print($flash) ?>', 'autoPlay':false, 'autoBuffering':true, 'scaling':'fit'} ]}"
                  />
 <?php if(!empty($poster)): ?>
       <img src="<?php print($poster) ?>" width="<?php print($width) ?>" height="<?php print($height) ?>" alt="Poster Image" title="No video playback capabilities." />

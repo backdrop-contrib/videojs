@@ -17,10 +17,10 @@ function template_preprocess_videojs(&$vars) {
       array('width' => '1920', 'height' => '1088', 'type' => "video/mp4; codecs='avc1.640029, mp4a.40.2'"), // Profile: High, Level: 4.1
       array('width' => '2048', 'height' => '2048', 'type' => "video/mp4; codecs='avc1.58A033, mp4a.40.2'") // Profile: Extended, Level: 5.1
     ),
-    'video/webm' => 'video/webm; codec="vp8, vorbis"',
-    'application/octet-stream' => 'video/webm; codec="vp8, vorbis"',
-    'video/ogg' => 'video/ogg; codec="theora, vorbis"',
-    'application/ogg' => 'video/ogg; codec="theora, vorbis"',
+    //'video/webm' => 'video/webm; codec="vp8, vorbis"',
+    //'application/octet-stream' => 'video/webm; codec="vp8, vorbis"',
+    //'video/ogg' => 'video/ogg; codec="theora, vorbis"',
+    //'application/ogg' => 'video/ogg; codec="theora, vorbis"',
     'video/quicktime' => 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"'
   );
   // set the width and height
@@ -110,29 +110,43 @@ function _videojs_flashplayer($url, $width, $height, $poster = NULL, $player_id)
   if (module_exists('flowplayer')) {
     // kjh: use a playlist to display the thumbnail if not auto playing
     if ($poster) {
-      $options = array('playlist' => array($poster,
-          array('url' => urlencode($url),
+      $options = array(
+        'playlist' => array(
+          array(
+            'url' => $poster,
+            'scaling' => 'fit',
+          ),
+          array(
+            'url' => urlencode($url),
             'autoPlay' => FALSE,
             'autoBuffering' => TRUE,
+            'scaling' => 'fit',
           ),
         ),
       );
     }
     else {
       $options = array(
-        'clip' => array('url' => urlencode($url),
+        'clip' => array(
+          'url' => urlencode($url),
           'autoPlay' => FALSE,
           'autoBuffering' => TRUE,
+          'scaling' => 'fit',
         ),
       );
     }
-    return theme('flowplayer', array(
-      'config' => $options,
-      'id' => $player_id .'-flowplayer',
-      'attributes' => array(
-        'style' => 'width: '. $width .'px; height: '. ($height + 24) .'px;',
-        'class' => 'vjs-flash-fallback',
-      ),
-    ));
+
+    // Class must be on a container element because Video.js does not look at
+    // elements with multiple classes
+    $style = 'width: '. $width .'px; height: '. ($height + 24) .'px;';
+
+    return
+      '<div class="vjs-flash-fallback" style="'. $style .'">'.
+      theme('flowplayer', array(
+        'config' => $options,
+        'id' => $player_id .'-flowplayer',
+        'attributes' => array('style' => $style),
+      )).
+      '</div>';
   }
 }
