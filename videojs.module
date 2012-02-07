@@ -3,7 +3,7 @@
  * @file
  * Provides an HTML5-compatible with Flash-fallback video player.
  *
- * This module provides functionality for loading the videojs library and
+ * This module provides functionality for loading the Video.js library and
  * formatters for CCK FileFields.
  */
 
@@ -14,11 +14,11 @@ function videojs_menu() {
   $items = array();
 
   $items['admin/config/media/videojs'] = array(
-    'title' => 'VideoJS Settings',
+    'title' => 'Video.js',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('videojs_settings_form'),
     'access arguments' => array('administer site configuration'),
-    'description' => 'Configure the settings for the VideoJS module.',
+    'description' => 'Configure the settings for the Video.js module.',
     'file' => 'includes/videojs.admin.inc',
   );
 
@@ -59,7 +59,7 @@ function videojs_views_api() {
 function videojs_field_formatter_info() {
   return array(
     'videojs' => array(
-      'label' => t('VideoJS : HTML5 Video Player'),
+      'label' => t('Video.js : HTML5 Video Player'),
       'field types' => array('file', 'video', 'media'),
       'description' => t('Display a video file as an HTML5-compatible with Flash-fallback video player.'),
     )
@@ -86,11 +86,11 @@ function videojs_field_formatter_view($entity_type, $entity, $field, $instance, 
 }
 
 /**
- * Add the videojs library to the page.
+ * Add the Video.js library to the page.
  *
  * @param $add
  *   By default this function will add videojs to the page JavaScript array
- *   directly. If wanting to store the videojs file as an #attached property,
+ *   directly. If wanting to store the Video.js file as an #attached property,
  *   set this to FALSE and videojs_add() will only return the needed array
  *   suitable for use as an #attached property.
  */
@@ -140,10 +140,10 @@ function videojs_add($add = TRUE) {
 }
 
 /**
- * Return the version of video JS installed.
+ * Return the version of Video.js installed.
  *
  * @param $directory
- *   The directory to check for a videojs installation.
+ *   The directory to check for a Video.js installation.
  */
 function videojs_get_version($directory = NULL) {
   $version = NULL;

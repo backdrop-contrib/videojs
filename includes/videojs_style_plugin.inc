@@ -1,12 +1,11 @@
 <?php
-
 /**
  * @file
- * Display style plugin for Views that renders rows as a videojs.
+ * Display style plugin for Views that renders rows as a Video.js.
  */
 
 /**
- * Style plugin to display a videojs.
+ * Style plugin to display a Video.js.
  */
 class videojs_style_plugin extends views_plugin_style {
 
@@ -55,12 +54,12 @@ class videojs_style_plugin extends views_plugin_style {
 
     // Ensure that we're using the field row style.
     if (!$this->row_plugin->uses_fields()) {
-      $errors[] = t('Display "@display" uses the "@style" row style, but the videojs display style requires use of the "Fields" row style.', array('@display' => $this->display->display_title, '@style' => $this->row_plugin->definition['title']));
+      $errors[] = t('Display "@display" uses the "@style" row style, but the Video.js display style requires use of the "Fields" row style.', array('@display' => $this->display->display_title, '@style' => $this->row_plugin->definition['title']));
     }
 
     // Ensure that a file path field is selected.
     if (empty($this->options['path_field'])) {
-      $errors[] = t('The videojs display style requires being configured so that at least one field is selected to provide a file path.');
+      $errors[] = t('The Video.js display style requires being configured so that at least one field is selected to provide a file path.');
     }
 
     return $errors;
@@ -118,5 +117,4 @@ class videojs_style_plugin extends views_plugin_style {
   function theme_functions() {
     return array('videojs');
   }
-
 }

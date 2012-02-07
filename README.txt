@@ -11,7 +11,7 @@ Install
 1) Copy the videojs folder to the modules folder in your installation. Usually
    this is sites/all/modules.
 
-2) Download videojs from http://videojs.com.
+2) Download Video.js from http://videojs.com.
 
 3) In your Drupal site, enable the module under Administer -> Site building ->
    Modules (/admin/build/modules).
@@ -23,7 +23,7 @@ Install
    option, as this can be used to label your files when they are displayed. Set the "Number
    of values" to at least 2.
 
-5) Configure the display of your FileField to use "videojs player".
+5) Configure the display of your FileField to use "Video.js player".
 
 6) Create a piece of content with the configured field. Give the file a
    description that will be used as the file label in the playlist.

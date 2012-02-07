@@ -1,6 +1,7 @@
 <?php
 /**
- * Provide the HTML output of the videojs audio player.
+ * @file
+ * Provide the HTML output of the Video.js video player.
  */
 
 $attrs = '';

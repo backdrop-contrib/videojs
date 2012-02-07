@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Theme and preprocess functions for the videojs module.
+ * Theme and preprocess functions for the Video.js module.
  */
 
 /**
@@ -9,7 +9,7 @@
  */
 function template_preprocess_videojs(&$vars) {
   videojs_add();
-  // TODO : add those settings to the admin
+  // @todo add those settings to the admin
   $codecs = array(
     'video/mp4' => array(
       array('width' => '720', 'height' => '576', 'type' => "video/mp4; codecs='avc1.42E01E, mp4a.40.2'"), // Profile: Baseline, Level: 3.0
