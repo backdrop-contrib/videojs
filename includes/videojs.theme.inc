@@ -17,10 +17,10 @@ function template_preprocess_videojs(&$vars) {
       array('width' => '1920', 'height' => '1088', 'type' => "video/mp4; codecs='avc1.640029, mp4a.40.2'"), // Profile: High, Level: 4.1
       array('width' => '2048', 'height' => '2048', 'type' => "video/mp4; codecs='avc1.58A033, mp4a.40.2'") // Profile: Extended, Level: 5.1
     ),
-    //'video/webm' => 'video/webm; codec="vp8, vorbis"',
-    //'application/octet-stream' => 'video/webm; codec="vp8, vorbis"',
-    //'video/ogg' => 'video/ogg; codec="theora, vorbis"',
-    //'application/ogg' => 'video/ogg; codec="theora, vorbis"',
+    'video/webm' => 'video/webm; codec="vp8, vorbis"',
+    'application/octet-stream' => 'video/webm; codec="vp8, vorbis"',
+    'video/ogg' => 'video/ogg; codec="theora, vorbis"',
+    'application/ogg' => 'video/ogg; codec="theora, vorbis"',
     'video/quicktime' => 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"'
   );
   // set the width and height
