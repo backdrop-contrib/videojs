@@ -129,9 +129,6 @@ function videojs_add($add = TRUE) {
       'css' => array(
         $filepath_css,
         $videojs_css,
-        $directory . '/skins/hu.css',
-        $directory . '/skins/tube.css',
-        $directory . '/skins/vim.css',
       ),
     );
   }
