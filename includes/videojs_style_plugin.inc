@@ -27,7 +27,8 @@ class videojs_style_plugin extends views_plugin_style {
     foreach ($this->display->handler->get_handlers('field') as $field => $handler) {
       if ($label = $handler->label()) {
         $options[$field] = $label;
-      } else {
+      }
+      else {
         $options[$field] = $handler->ui_name();
       }
     }
@@ -43,7 +44,7 @@ class videojs_style_plugin extends views_plugin_style {
       '#multiple' => TRUE,
       '#size' => 4,
       '#default_value' => $this->options['path_field'],
-      '#description' => t('Select the fields that will contain a file path to an video file. If multiple fields are selected, the first one that contains a value will be used. This field will be hidden from view unless there are no other fields visible'),
+      '#description' => t('Select the fields that will contain a file path to an video file. If multiple fields are selected, the first one that contains a value will be used. This field will not be visible in the view unless there are no other fields visible'),
       '#weight' => -5,
     );
   }

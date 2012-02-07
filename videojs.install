@@ -18,7 +18,7 @@ function videojs_requirements($phase) {
       $requirements['videojs']['description'] = t('Missing the videojs library. Please <a href="!url">download videojs</a> and extract it into the %directory directory.', array('!url' => url('http://videojs.com'), '%directory' => variable_get('videojs_directory', 'sites/all/libraries/video-js')));
       $requirements['videojs']['severity'] = REQUIREMENT_ERROR;
     }
-    elseif(version_compare($videojs_version, '3', '>=')) {
+    elseif (version_compare($videojs_version, '3', '>=')) {
       $requirements['videojs']['value'] = t('Unsupported version @version', array('@version' => $videojs_version));
       $requirements['videojs']['description'] = t('The installed VideoJS library is not supported. This version of the VideoJS module only supports VideoJS version 2. <a href="@videojs-url">Download VideoJS version 2</a> and extract it into the %directory directory or <a href="@videojs-module-url">download VideoJS module version 7.x-2.x or later</a> to use VideoJS 3.', array('@videojs-url' => url('http://videojs.com'), '%directory' => variable_get('videojs_directory', 'sites/all/libraries/video-js'), '@videojs-module-url' => url('http://drupal.org/project/videojs')));
       $requirements['videojs']['severity'] = REQUIREMENT_ERROR;

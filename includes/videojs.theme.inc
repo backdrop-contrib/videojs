@@ -1,6 +1,6 @@
 <?php
-
 /**
+ * @file
  * Theme and preprocess functions for the videojs module.
  */
 
@@ -138,15 +138,15 @@ function _videojs_flashplayer($url, $width, $height, $poster = NULL, $player_id)
 
     // Class must be on a container element because Video.js does not look at
     // elements with multiple classes
-    $style = 'width: '. $width .'px; height: '. ($height + 24) .'px;';
+    $style = 'width: ' . $width . 'px; height: ' . ($height + 24) . 'px;';
 
     return
-      '<div class="vjs-flash-fallback" style="'. $style .'">'.
+      '<div class="vjs-flash-fallback" style="' . $style . '">' .
       theme('flowplayer', array(
         'config' => $options,
-        'id' => $player_id .'-flowplayer',
+        'id' => $player_id . '-flowplayer',
         'attributes' => array('style' => $style),
-      )).
+      )) .
       '</div>';
   }
 }
