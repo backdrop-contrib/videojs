@@ -70,19 +70,20 @@ function videojs_field_formatter_info() {
  * Implements hook_field_formatter_view().
  */
 function videojs_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
-  $element = array();
-  list($id, $vid, $bundle) = entity_extract_ids($entity_type, $entity);
-  switch ($display['type']) {
-    case 'videojs':
-      $element = array(
-        '#theme' => 'videojs',
-        '#items' => $items,
-        '#player_id' => 'videojs-' . $id . '-' . str_replace('_', '-', $instance['field_name']),
-      );
-      break;
+  if ($display['type'] != 'videojs') {
+    return array();
   }
-  $element['#attached'] = videojs_add(FALSE);
-  return $element;
+
+  list($id, $vid, $bundle) = entity_extract_ids($entity_type, $entity);
+
+  return array(
+    array(
+      '#theme' => 'videojs',
+      '#items' => $items,
+      '#player_id' => 'videojs-' . $id . '-' . str_replace('_', '-', $instance['field_name']),
+      '#attached' => videojs_add(FALSE),
+    ),
+  );
 }
 
 /**

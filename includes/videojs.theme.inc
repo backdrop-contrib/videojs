@@ -26,8 +26,6 @@ function template_preprocess_videojs(&$vars) {
   $vars['autoplay'] = !!variable_get('videojs_autoplay', FALSE);
   $items = array();
 
-  $count = count($vars['items']);
-  $number = 0;
   // poster image
   $vars['poster'] = NULL;
   foreach ($vars['items'] as $delta => $item) {
