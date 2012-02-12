@@ -18,7 +18,7 @@ function template_preprocess_videojs(&$vars) {
     'application/ogg' => 'video/ogg',
     'video/quicktime' => 'video/mp4',
     'video/flv' => 'video/flv',
-    'video/flv' => 'video/x-flv',
+    'video/x-flv' => 'video/flv',
   );
   // set the width and height
   $vars['width'] = !empty($vars['attributes']['width']) ? $vars['attributes']['width'] : variable_get('videojs_width', 640);
