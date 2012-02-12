@@ -97,44 +97,31 @@ function videojs_field_formatter_view($entity_type, $entity, $field, $instance, 
  */
 function videojs_add($add = TRUE) {
   static $added = FALSE;
+  if (!isset($added)) {
+    $added = &drupal_static(__FUNCTION__);
+  }
 
   $directory = variable_get('videojs_directory', 'sites/all/libraries/video-js');
-  $return = FALSE;
-  if (file_exists($directory . '/video.js')) {
-    $filepath = $directory . '/video.js';
-    $filepath_css = $directory . '/video-js.css';
+
+  if (!file_exists($directory . '/video.min.js')) {
+    return FALSE;
   }
 
-  if (isset($filepath)) {
-    $videojs_js = drupal_get_path('module', 'videojs') . '/theme/videojs.js';
-    $videojs_css = drupal_get_path('module', 'videojs') . '/theme/videojs.css';
-    $settings = array('videojs' => array(
-        'autoPlay' => (int) variable_get('videojs_autoplay', ''),
-        ));
-    if ($add) {
-      drupal_add_js($filepath, array('group' => JS_LIBRARY));
-      drupal_add_css($filepath_css);
-      drupal_add_js($videojs_js, array('group' => JS_DEFAULT));
-      drupal_add_css($videojs_css);
-      if (!$added) {
-        drupal_add_js($settings, array('type' => 'setting'));
-        $added = TRUE;
-      }
-    }
-    $return = array(
-      'js' => array(
-        $filepath => array('group' => JS_LIBRARY),
-        $videojs_js => array('group' => JS_DEFAULT),
-        array('data' => $settings, 'type' => 'setting'),
-      ),
-      'css' => array(
-        $filepath_css,
-        $videojs_css,
-      ),
-    );
+  $libjs = $directory . '/video.min.js';
+  $libcss = $directory . '/video-js.min.css';
+
+  if ($add && !$added) {
+    drupal_add_js($libjs, array('group' => JS_LIBRARY));
+    drupal_add_css($libcss);
+    $added = TRUE;
   }
 
-  return $return;
+  return array(
+    'js' => array(
+      $libjs => array('group' => JS_LIBRARY),
+    ),
+    'css' => array($libcss),
+  );
 }
 
 /**
