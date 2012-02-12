@@ -163,3 +163,52 @@ function videojs_get_version($directory = NULL) {
 
   return $version;
 }
+
+/**
+ * Implements hook_libraries_info();
+ */
+function videojs_libraries_info() {
+  $libraries = array();
+
+  $libraries['video-js'] = array(
+    'name' => 'Video.js',
+    'vendor url' => 'http://videojs.com',
+    'download url' => 'https://github.com/zencoder/video-js/downloads',
+    'version arguments' => array(
+      'file' => 'video.js',
+      'pattern' => '/(?:v[ ]*|Version )([\d.]+)/i',
+      'lines' => 10,
+      'cols' => 50,
+    ),
+    'versions' => array(
+      '2' => array(
+        'files' => array(
+          'js' => array('video.js' => array('group' => JS_LIBRARY)),
+          'css' => array('video-js.css'),
+        ),
+      ),
+      '3' => array(
+        'files' => array(
+          'js' => array('video.min.js' => array('group' => JS_LIBRARY)),
+          'css' => array('video-js.min.css'),
+        ),
+        'variants' => array(
+          'source' => array(
+            'files' => array(
+              'js' => array('video.js' => array('group' => JS_LIBRARY)),
+              'css' => array('video-js.css'),
+            ),
+            'minified' => array(
+              'files' => array(
+                'js' => array('video.min.js' => array('group' => JS_LIBRARY)),
+                'css' => array('video-js.min.css'),
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+
+  return $libraries;
+}
