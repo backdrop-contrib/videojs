@@ -60,7 +60,7 @@ function videojs_field_formatter_info() {
   return array(
     'videojs' => array(
       'label' => t('Video.js : HTML5 Video Player'),
-      'field types' => array('file', 'video', 'media', 'link_field'),
+      'field types' => array('file', 'media', 'link_field'),
       'description' => t('Display a video file as an HTML5-compatible with Flash-fallback video player.'),
     ),
   );
