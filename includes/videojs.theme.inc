@@ -10,6 +10,7 @@
 function template_preprocess_videojs(&$vars) {
   videojs_add();
 
+  $items = $vars['items'];
   $codecs = array(
     'video/mp4' => 'video/mp4',
     'video/webm' => 'video/webm',
@@ -20,30 +21,29 @@ function template_preprocess_videojs(&$vars) {
     'video/flv' => 'video/flv',
     'video/x-flv' => 'video/flv',
   );
-  // set the width and height
+
   $vars['width'] = !empty($vars['attributes']['width']) ? $vars['attributes']['width'] : variable_get('videojs_width', 640);
   $vars['height'] = !empty($vars['attributes']['height']) ? $vars['attributes']['height'] : variable_get('videojs_height', 264);
   $vars['autoplay'] = !!variable_get('videojs_autoplay', FALSE);
-  $items = array();
-
-  // poster image
+  $vars['items'] = array();
   $vars['poster'] = NULL;
-  foreach ($vars['items'] as $delta => $item) {
-    // Skip unplayable items.
+
+  foreach ($items as $item) {
     if (!isset($codecs[$item['filemime']])) {
       // check for image file and add in it as poster
       $image = file_validate_is_image((object) $item);
       if (empty($image)) {
         $vars['poster'] = file_create_url($item['uri']);
       }
+
+      // Skip unplayable items.
       continue;
     }
 
     $item['videotype'] = $codecs[$item['filemime']];
-    $items[] = $item;
-  }
 
-  $vars['items'] = $items;
+    $vars['items'][] = $item;
+  }
 }
 
 /**
