@@ -13,6 +13,7 @@ function template_preprocess_videojs(&$vars) {
   $items = $vars['items'];
   $codecs = array(
     'video/mp4' => 'video/mp4',
+    'video/x-m4v' => 'video/mp4',
     'video/webm' => 'video/webm',
     'application/octet-stream' => 'video/webm',
     'video/ogg' => 'video/ogg',
