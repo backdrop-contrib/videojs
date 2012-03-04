@@ -165,7 +165,7 @@ function videojs_get_version($directory = NULL) {
 }
 
 /**
- * Implements hook_libraries_info();
+ * Implements hook_libraries_info().
  */
 function videojs_libraries_info() {
   $libraries = array();

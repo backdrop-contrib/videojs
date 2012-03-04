@@ -18,4 +18,4 @@ if (!empty($items)): ?>
   <source src="<?php print(file_create_url($item['uri'])) ?>" type="<?php print check_plain($item['videotype']) ?>" />
 <?php endforeach; ?>
 </video>
-<?php endif; ?>
+<?php endif;
