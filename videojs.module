@@ -81,9 +81,27 @@ function videojs_field_formatter_view($entity_type, $entity, $field, $instance, 
     $links = $items;
     $items = array();
     foreach ($links as $link) {
+      // Allow the user to override the mime type using the title field
+      if (!empty($link['title']) && strncmp('video/', $link['title'], 6) === 0) {
+        $mime = $link['title'];
+      }
+      // Manual override for WebM, because Drupal doesn't detect it.
+      elseif (substr($link['url'], -5) == '.webm') {
+        $mime = 'video/webm';
+      }
+      else {
+        $mime = DrupalLocalStreamWrapper::getMimeType($link['url']);
+      }
+
+      // If the mime type is application/octet-stream, default to MP4.
+      // This happens for instance for links without extensions.
+      if ($mime == 'application/octet-stream') {
+        $mime = 'video/mp4';
+      }
+
       $items[] = array(
-        'uri' => $link['url'],
-        'filemime' => DrupalLocalStreamWrapper::getMimeType($link['url']),
+        'uri' => url($link['url'], $link),
+        'filemime' => $mime,
       );
     }
   }
