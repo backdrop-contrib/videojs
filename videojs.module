@@ -91,12 +91,12 @@ function videojs_field_formatter_view($entity_type, $entity, $field, $instance, 
       }
       else {
         $mime = DrupalLocalStreamWrapper::getMimeType($link['url']);
-      }
 
-      // If the mime type is application/octet-stream, default to MP4.
-      // This happens for instance for links without extensions.
-      if ($mime == 'application/octet-stream') {
-        $mime = 'video/mp4';
+        // If the mime type is application/octet-stream, default to MP4.
+        // This happens for instance for links without extensions.
+        if ($mime == 'application/octet-stream') {
+          $mime = 'video/mp4';
+        }
       }
 
       $items[] = array(
