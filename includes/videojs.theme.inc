@@ -30,10 +30,13 @@ function template_preprocess_videojs(&$vars) {
   $vars['poster'] = NULL;
 
   foreach ($items as $item) {
+    if (empty($item['filemime'])) {
+      continue;
+    }
+
     if (!isset($codecs[$item['filemime']])) {
       // check for image file and add in it as poster
-      $image = file_validate_is_image((object) $item);
-      if (empty($image)) {
+      if (strncmp($item['filemime'], 'image/', 6) === 0) {
         $vars['poster'] = file_create_url($item['uri']);
       }
 
