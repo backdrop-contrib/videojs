@@ -21,6 +21,8 @@ function template_preprocess_videojs(&$vars) {
     'video/quicktime' => 'video/mp4',
     'video/flv' => 'video/flv',
     'video/x-flv' => 'video/flv',
+    'audio/mpeg' => 'audio/mpeg',
+    'audio/ogg' => 'audio/ogg',
   );
 
   $vars['width'] = !empty($vars['attributes']['width']) ? $vars['attributes']['width'] : variable_get('videojs_width', 640);
