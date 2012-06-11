@@ -1,0 +1,57 @@
+<?php
+/**
+ * @file
+ * Provides bandwidth switching for the Video.js player.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function videojs_hls_menu() {
+  $items = array();
+
+  $items['m3u8/%'] = array(
+    'title' => 'm3u8 master index',
+    'page callback' => 'videojs_hls_render',
+    'page arguments' => array(1),
+    'access callback' => TRUE,
+    'file' => 'videojs_hls.pages.inc',
+    'type' => MENU_CALLBACK,
+    'delivery callback' => 'videojs_hls_deliver',
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_preprocess_videojs().
+ */
+function videojs_hls_preprocess_videojs(&$vars) {
+  $m3u8items = array();
+  $singleitem = NULL;
+
+  foreach ($vars['items'] as $k => $item) {
+    if ($item['videotype'] != 'application/vnd.apple.mpegurl') {
+      continue;
+    }
+    unset($vars['items'][$k]);
+
+    $m3u8items[] = $item['uri'];
+    $singleitem = $item;
+  }
+
+  // If there are no m3u8 files, return now.
+  if (empty($m3u8items)) {
+    return;
+  }
+  // If there is just one m3u8 item, don't create an alternates file.
+  if (count($m3u8items) == 1) {
+    $vars['items'][] = $singleitem;
+    return;
+  }
+
+  array_unshift($vars['items'], array(
+    'uri' => url('m3u8/' . rawurlencode(implode('|', $m3u8items))),
+    'videotype' => 'application/vnd.apple.mpegurl',
+  ));
+}
