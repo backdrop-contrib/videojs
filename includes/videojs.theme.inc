@@ -7,7 +7,7 @@
 /**
  * Preprocess function for videojs.tpl.php when using a playlist.
  */
-function template_preprocess_videojs(&$vars) {
+function videojs_preprocess_videojs(&$vars) {
   videojs_add();
 
   $items = $vars['items'];
@@ -23,6 +23,7 @@ function template_preprocess_videojs(&$vars) {
     'video/x-flv' => 'video/flv',
     'audio/mpeg' => 'audio/mpeg',
     'audio/ogg' => 'audio/ogg',
+    'application/vnd.apple.mpegurl' => 'application/vnd.apple.mpegurl', // .m3u8
   );
 
   $vars['width'] = !empty($vars['attributes']['width']) ? $vars['attributes']['width'] : variable_get('videojs_width', 640);
