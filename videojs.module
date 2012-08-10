@@ -31,7 +31,7 @@ function videojs_menu() {
 function videojs_theme() {
   return array(
     'videojs' => array(
-      'variables' => array('items' => NULL, 'player_id' => NULL, 'attributes' => NULL),
+      'variables' => array('items' => NULL, 'player_id' => NULL, 'attributes' => NULL, 'entity' => NULL, 'entity_type' => NULL),
       'template' => 'theme/videojs',
       'file' => 'includes/videojs.theme.inc',
     ),
@@ -113,6 +113,8 @@ function videojs_field_formatter_view($entity_type, $entity, $field, $instance, 
       '#items' => $items,
       '#player_id' => 'videojs-' . $id . '-' . str_replace('_', '-', $instance['field_name']),
       '#attached' => videojs_add(FALSE),
+      '#entity' => $entity,
+      '#entity_type' => $entity_type,
     ),
   );
 }
