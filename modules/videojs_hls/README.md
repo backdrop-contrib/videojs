@@ -13,9 +13,6 @@ This module intercepts m3u8 files supplied to the Video.js module.
 It replaces these files with one new dynamically generated file file that makes
 bandwidth switching available to iOS devices.
 
-This module does not provide an administrative interface and has no
-settings. It works automatically when it is enabled.
-
 Requirements
 ------------
 
@@ -23,12 +20,31 @@ Requirements
    is supplied there is no choice for the iOS player, so no master index is
    needed.
 2. The files need to have the filemime application/vnd.apple.mpegurl.
-3. The filenames need to contain `<number>k` in the filename, such as
+3. The filenames need to contain `<number>k` in the file name, such as
    `sample-640k.m3u8`. This number is used to indicate the bandwidth
    to the client.
 
 You can use the Video module with the Zencoder transcoder to create files
 that are compatible with the Video.js module.
+
+Configuration
+-------------
+
+The module works out of the box without configuration, provided you meet the
+requirements and Video.js is working correctly.
+By default, the m3u8 master index files are created dynamically: the paths
+to the individual files are embedded in the path of the index file. This works
+in most of the times and only breaks if the paths to the m3u8 files are very
+long.
+In those cases, you can change the `Delivery mode` to `Static files` in
+the Video.js settings page. Now, the m3u8 master index file will be stored on
+a configurable location. The filename will be formed by the MD5 hash of the
+file contents, so a new file will only be written if the source file names
+change. The master index file will never be deleted, so it is advisable to
+write the master index files to a dedicated directoryso they can be removed
+occasionally. It is no problem to remove a m3u8 master index file because they
+will be recreated when needed.
+
 
 Also see
 --------
