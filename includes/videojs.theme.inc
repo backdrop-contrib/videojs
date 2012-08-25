@@ -27,7 +27,7 @@ function videojs_preprocess_videojs(&$vars) {
   );
 
   $vars['width'] = !empty($vars['attributes']['width']) ? $vars['attributes']['width'] : variable_get('videojs_width', 640);
-  $vars['height'] = !empty($vars['attributes']['height']) ? $vars['attributes']['height'] : variable_get('videojs_height', 264);
+  $vars['height'] = !empty($vars['attributes']['height']) ? $vars['attributes']['height'] : variable_get('videojs_height', 360);
   $vars['autoplay'] = !!variable_get('videojs_autoplay', FALSE);
   $vars['items'] = array();
   $vars['poster'] = NULL;
