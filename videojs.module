@@ -62,6 +62,10 @@ function videojs_field_formatter_info() {
       'label' => t('Video.js : HTML5 Video Player'),
       'field types' => array('file', 'media', 'link_field'),
       'description' => t('Display a video file as an HTML5-compatible with Flash-fallback video player.'),
+      'settings'  => array(
+        'width' => NULL,
+        'height' => NULL,
+      ),
     ),
   );
 }
@@ -106,6 +110,13 @@ function videojs_field_formatter_view($entity_type, $entity, $field, $instance, 
     }
   }
 
+  $settings = $display['settings'];
+  $attributes = array();
+  if (!empty($settings['width']) && !empty($settings['height'])) {
+    $attributes['width'] = intval($settings['width']);
+    $attributes['height'] = intval($settings['height']);
+  }
+
   list($id, $vid, $bundle) = entity_extract_ids($entity_type, $entity);
   return array(
     array(
@@ -115,8 +126,59 @@ function videojs_field_formatter_view($entity_type, $entity, $field, $instance, 
       '#attached' => videojs_add(FALSE),
       '#entity' => $entity,
       '#entity_type' => $entity_type,
+      '#attributes' => $attributes,
+     ),
+   );
+}
+
+/**
+ * Implements hook_field_formatter_settings_form().
+ */
+function videojs_field_formatter_settings_form($field, $instance, $view_mode, $form, &$form_state) {
+  $display = $instance['display'][$view_mode];
+  $settings = $display['settings'];
+
+  return array(
+    '#element_validate' => array('videojs_field_formatter_settings_form_validate'),
+    'width' => array(
+      '#type' => 'textfield',
+      '#title' => t('Width'),
+      '#default_value' => $settings['width'],  
+      '#size' => 6,
+      '#maxlength' => 5,
+      '#element_validate' => array('element_validate_integer_positive'),
+    ),
+    'height' => array(
+      '#type' => 'textfield',
+      '#title' => t('Height'),
+      '#default_value' => $settings['height'],  
+      '#size' => 6,
+      '#maxlength' => 5,
+      '#element_validate' => array('element_validate_integer_positive'),
     ),
   );
+}
+
+function videojs_field_formatter_settings_form_validate($form, $form_state) {
+  $width = $form['width']['#value'];
+  $height = $form['height']['#value'];
+
+  // The fields need to be both entered or both empty
+  if (empty($width) != empty($height)) {
+    form_error($form[empty($width) ? 'height' : 'width'], t('The width and height field need to be both set or both empty.'));
+  }
+}
+
+/**
+ * Implements hook_field_formatter_settings_summary().
+ */
+function videojs_field_formatter_settings_summary($field, $instance, $view_mode) {
+  $display = $instance['display'][$view_mode];
+  $settings = $display['settings'];
+
+  return t('Player dimensions: @widthxheight', array(
+    '@widthxheight' => !empty($settings['width']) && !empty($settings['height']) ? $settings['width'] . 'x' . $settings['height'] : t('default'),
+  ));
 }
 
 /**
