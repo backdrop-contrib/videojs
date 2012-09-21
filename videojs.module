@@ -31,7 +31,7 @@ function videojs_menu() {
 function videojs_theme() {
   return array(
     'videojs' => array(
-      'variables' => array('items' => NULL, 'player_id' => NULL, 'attributes' => NULL, 'entity' => NULL, 'entity_type' => NULL),
+      'variables' => array('items' => NULL, 'player_id' => NULL, 'attributes' => NULL, 'entity' => NULL, 'entity_type' => NULL, 'posterimage_style' => NULL),
       'template' => 'theme/videojs',
       'file' => 'includes/videojs.theme.inc',
     ),
@@ -65,6 +65,8 @@ function videojs_field_formatter_info() {
       'settings'  => array(
         'width' => NULL,
         'height' => NULL,
+        'posterimage_field' => NULL,
+        'posterimage_style' => NULL,
       ),
     ),
   );
@@ -117,6 +119,14 @@ function videojs_field_formatter_view($entity_type, $entity, $field, $instance, 
     $attributes['height'] = intval($settings['height']);
   }
 
+  // Add the poster image
+  if (!empty($settings['posterimage_field']) && !empty($entity->{$settings['posterimage_field']})) {
+    $images = field_get_items($entity_type, $entity, $settings['posterimage_field']);
+    if (!empty($images)) {
+      array_unshift($items, array_shift($images));
+    }
+  }
+
   list($id, $vid, $bundle) = entity_extract_ids($entity_type, $entity);
   return array(
     array(
@@ -127,8 +137,9 @@ function videojs_field_formatter_view($entity_type, $entity, $field, $instance, 
       '#entity' => $entity,
       '#entity_type' => $entity_type,
       '#attributes' => $attributes,
-     ),
-   );
+      '#posterimage_style' => !empty($settings['posterimage_style']) ? $settings['posterimage_style'] : NULL,
+    ),
+  );
 }
 
 /**
@@ -137,26 +148,61 @@ function videojs_field_formatter_view($entity_type, $entity, $field, $instance, 
 function videojs_field_formatter_settings_form($field, $instance, $view_mode, $form, &$form_state) {
   $display = $instance['display'][$view_mode];
   $settings = $display['settings'];
+  $image_styles = image_style_options(FALSE);
 
-  return array(
+  $otherinstances = field_info_instances($instance['entity_type'], $instance['bundle']);
+  $imagefields = array();
+
+  foreach ($otherinstances as $otherinstance) {
+    $otherfield = field_info_field_by_id($otherinstance['field_id']);
+    if ($otherfield['type'] == 'image') {
+      $imagefields[$otherinstance['field_name']] = $otherinstance['label'];
+    }
+  }
+
+  $form = array(
     '#element_validate' => array('videojs_field_formatter_settings_form_validate'),
-    'width' => array(
-      '#type' => 'textfield',
-      '#title' => t('Width'),
-      '#default_value' => $settings['width'],  
-      '#size' => 6,
-      '#maxlength' => 5,
-      '#element_validate' => array('element_validate_integer_positive'),
-    ),
-    'height' => array(
-      '#type' => 'textfield',
-      '#title' => t('Height'),
-      '#default_value' => $settings['height'],  
-      '#size' => 6,
-      '#maxlength' => 5,
-      '#element_validate' => array('element_validate_integer_positive'),
-    ),
   );
+
+  $form['width'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Width'),
+    '#default_value' => $settings['width'],
+    '#size' => 6,
+    '#maxlength' => 5,
+    '#element_validate' => array('element_validate_integer_positive'),
+  );
+  $form['height'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Height'),
+    '#default_value' => $settings['height'],
+    '#size' => 6,
+    '#maxlength' => 5,
+    '#element_validate' => array('element_validate_integer_positive'),
+  );
+
+  if (!empty($imagefields)) {
+    $form['posterimage_field'] = array(
+      '#type' => 'select',
+      '#title' => t('Poster image field'),
+      '#default_value' => $settings['posterimage_field'],
+      '#options' => $imagefields,
+      '#description' => t('If an image is uploaded to the field above it will be used as the poster image.'),
+      '#empty_value' => NULL,
+      '#empty_option' => t('- None -'),
+    );
+  }
+
+  $form['posterimage_style'] = array(
+    '#title' => t('Poster image style'),
+    '#type' => 'select',
+    '#default_value' => $settings['posterimage_style'],
+    '#empty_option' => t('None (original image)'),
+    '#description' => t('The original video thumbnail will be displayed. Otherwise, you can add a custom image style at !settings.', array('!settings' => l(t('media image styles'), 'admin/config/media/image-styles'))),
+    '#options' => $image_styles,
+  );
+
+  return $form;
 }
 
 function videojs_field_formatter_settings_form_validate($form, $form_state) {
@@ -175,10 +221,29 @@ function videojs_field_formatter_settings_form_validate($form, $form_state) {
 function videojs_field_formatter_settings_summary($field, $instance, $view_mode) {
   $display = $instance['display'][$view_mode];
   $settings = $display['settings'];
+  $image_styles = image_style_options(FALSE);
 
-  return t('Player dimensions: @widthxheight', array(
+  $output = t('Player dimensions: @widthxheight', array(
     '@widthxheight' => !empty($settings['width']) && !empty($settings['height']) ? $settings['width'] . 'x' . $settings['height'] : t('default'),
   ));
+
+  if (!empty($settings['posterimage_field'])) {
+    $imageinstance = field_info_instance($instance['entity_type'], $settings['posterimage_field'], $instance['bundle']);
+    if ($imageinstance != NULL) {
+      $output .= '<br/>';
+      $output .= t('Poster image field') . ': ' . check_plain($imageinstance['label']);
+    }
+  }
+
+  $output .= '<br/>';
+  if (isset($image_styles[$settings['posterimage_style']])) {
+    $output .= t('Poster image style') . ': ' . check_plain($image_styles[$settings['posterimage_style']]);
+  }
+  else {
+    $output .= t('Poster image style') . ': ' . t('None');
+  }
+
+  return $output;
 }
 
 /**

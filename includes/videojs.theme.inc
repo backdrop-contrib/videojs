@@ -40,7 +40,7 @@ function videojs_preprocess_videojs(&$vars) {
     if (!isset($codecs[$item['filemime']])) {
       // check for image file and add in it as poster
       if (strncmp($item['filemime'], 'image/', 6) === 0) {
-        $vars['poster'] = file_create_url($item['uri']);
+        $vars['poster'] = $item['uri'];
       }
 
       // Skip unplayable items.
@@ -50,6 +50,16 @@ function videojs_preprocess_videojs(&$vars) {
     $item['videotype'] = $codecs[$item['filemime']];
 
     $vars['items'][] = $item;
+  }
+
+  // Turn the poster image URI into a URL
+  if (!empty($vars['poster'])) {
+    if (empty($vars['posterimage_style'])) {
+      $vars['poster'] = file_create_url($vars['poster']);
+    }
+    else {
+      $vars['poster'] = image_style_url($vars['posterimage_style'], $vars['poster']);
+    }
   }
 }
 

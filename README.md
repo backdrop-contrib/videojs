@@ -27,6 +27,13 @@
 7. Create a poster image and upload the image in the FileField field created in
    step #4.
 
+## Poster images from a separate field
+
+It is possible to display images uploaded to an image field as the video
+poster image. After you added an image field to your content type, edit the
+display settings of the Video.js field and specify the image field in the
+"Poster image field" setting.
+
 ## Installation with the Video module
 
 If you are using the Video module, you can't configure the player at the
