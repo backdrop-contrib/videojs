@@ -150,13 +150,45 @@ function videojs_field_formatter_settings_form($field, $instance, $view_mode, $f
   $settings = $display['settings'];
   $image_styles = image_style_options(FALSE);
 
-  $otherinstances = field_info_instances($instance['entity_type'], $instance['bundle']);
-  $imagefields = array();
-
-  foreach ($otherinstances as $otherinstance) {
-    $otherfield = field_info_field_by_id($otherinstance['field_id']);
-    if ($otherfield['type'] == 'image') {
-      $imagefields[$otherinstance['field_name']] = $otherinstance['label'];
+  // Determine the image fields that will be selectable.
+  if ($instance['entity_type'] == 'ctools' && $instance['bundle'] == 'ctools') {
+    // This is a fake instance (see ctools_fields_fake_field_instance())
+    // Display all image fields in bundles that contain this field.
+    $otherfields = field_info_fields();
+    foreach ($otherfields as $otherfield) {
+      if ($otherfield['type'] == 'image' && !empty($otherfield['bundles'])) {
+        // Find a label by finding an instance label
+        $instancelabels = array();
+        $bundles_names = array();
+  
+        foreach ($otherfield['bundles'] as $otherentitytype => $otherbundles) {
+          foreach ($otherbundles as $otherbundle) {
+            // Check if this image field appears in one of the video field bundles.
+            if (isset($field['bundles'][$otherentitytype]) && in_array($otherbundle, $field['bundles'][$otherentitytype])) {
+              $otherinstance = field_info_instance($otherentitytype, $otherfield['field_name'], $otherbundle);
+              $instancelabels[$otherinstance['label']] = isset($instancelabels[$otherinstance['label']]) ? $instancelabels[$otherinstance['label']] + 1 : 1;
+              $bundles_names[] = t('@entity:@bundle', array('@entity' => $otherentitytype, '@bundle' => $otherbundle));
+            }
+          }
+        }
+  
+        if (!empty($instancelabels)) {
+          arsort($instancelabels);
+          $instancelabel = key($instancelabels);
+          $imagefields[$otherfield['field_name']] = $instancelabel . ' — ' . t('Appears in: @bundles.', array('@bundles' => implode(', ', $bundles_names)));
+        }
+      }
+    }
+  }
+  else {
+    $otherinstances = field_info_instances($instance['entity_type'], $instance['bundle']);
+    $imagefields = array();
+  
+    foreach ($otherinstances as $otherinstance) {
+      $otherfield = field_info_field_by_id($otherinstance['field_id']);
+      if ($otherfield['type'] == 'image') {
+        $imagefields[$otherinstance['field_name']] = $otherinstance['label'];
+      }
     }
   }
 
