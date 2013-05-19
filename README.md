@@ -15,6 +15,8 @@
 2. Download the Video.js library from http://videojs.com. Extract the module to
    `sites/all/libraries/video-js` and make sure that
    `sites/all/libraries/video-js/video.js` exists.
+   NOTE: you can skip this step and use the Video.js version from the
+   Video.js Content Deliver Network (CDN).
 3. In your Drupal site, enable the module.
 4. If not yet created, create a File field for one of your content types at
    Structure -> Content types -> [type] -> Manage fields. Make sure
@@ -24,7 +26,7 @@
    To allow users to upload a poster image, also allow png, gif or jpg.
 5. At the Manage display tab, select `Video.js` for your File field.
 6. Create a piece of content with the configured field.
-7. Create a poster image and upload the image in the FileField field created in
+7. Create a poster image and upload the image in the file field field created in
    step #4.
 
 ## Poster images from a separate field

@@ -46,6 +46,7 @@ function videojs_uninstall() {
   variable_del('videojs_width');
   variable_del('videojs_height');
   variable_del('videojs_skin');
+  variable_del('videojs_location');
 }
 
 /**

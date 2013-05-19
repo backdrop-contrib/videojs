@@ -290,74 +290,88 @@ function videojs_field_formatter_settings_summary($field, $instance, $view_mode)
 
 /**
  * Add the Video.js library to the page.
- *
- * @param $add
- *   By default this function will add videojs to the page JavaScript array
- *   directly. If wanting to store the Video.js file as an #attached property,
- *   set this to FALSE and videojs_add() will only return the needed array
- *   suitable for use as an #attached property.
  */
-function videojs_add($add = TRUE) {
-  static $added = FALSE;
-  if (!isset($added)) {
-    $added = &drupal_static(__FUNCTION__);
+function videojs_add() {
+  $added = &drupal_static(__FUNCTION__);
+
+  if ($added) {
+    return TRUE;
   }
 
-  $directory = variable_get('videojs_directory', 'sites/all/libraries/video-js');
+  switch (variable_get('videojs_location', 'cdn')) {
+    case 'path':
+      $path = variable_get('videojs_directory', 'sites/all/libraries/video-js');
+      $remote = strpos($path, '://') !== FALSE || strncmp('//', $path, 2) === 0;
+      break;
 
-  if (!file_exists($directory . '/video.js')) {
-    return FALSE;
+    case 'libraries':
+      if (!module_exists('libraries')) {
+        return FALSE;
+      }
+      $path = libraries_get_path('video-js');
+      if ($path === FALSE) {
+        return FALSE;
+      }
+      $remote = FALSE;
+      break;
+
+    case 'cdn':
+    default:
+      $path = '//vjs.zencdn.net/4.0';
+      $remote = TRUE;
   }
 
-  $libjs = $directory . '/video.js';
-  $libcss = $directory . '/video-js.css';
-  // TODO: don't add the following when using CDN.
-  $libswf = '_V_.options.flash.swf = "' . file_create_url($directory . '/video-js.swf') . '"';
+  drupal_add_js($path . '/video.js', array('group' => JS_LIBRARY, 'preprocess' => !$remote, 'type' => $remote ? 'external' : 'file'));
+  drupal_add_css($path . '/video-js.css', array('preprocess' => !$remote, 'type' => $remote ? 'external' : 'file'));
+  drupal_add_js('videojs.options.flash.swf = "' . file_create_url($path . '/video-js.swf') . '"', array('group' => JS_LIBRARY, 'type' => 'inline'));
 
-  if ($add && !$added) {
-    drupal_add_js($libjs, array('group' => JS_LIBRARY));
-    drupal_add_js($libswf, array('group' => JS_LIBRARY, 'type' => 'inline'));
-    drupal_add_css($libcss);
-    $added = TRUE;
-  }
-
-  return array(
-    'js' => array(
-      $libjs => array('group' => JS_LIBRARY),
-      $libswf => array('group' => JS_LIBRARY, 'type' => 'inline'),
-    ),
-    'css' => array($libcss),
-  );
+  $added = TRUE;
+  return TRUE;
 }
 
 /**
  * Return the version of Video.js installed.
  *
- * @param $directory
- *   The directory to check for a Video.js installation.
+ * @param $path
+ *   The path to check for a Video.js installation. This can be a local path
+ *   like sites/all/libraries/video-js or a remote path like
+ *   http://mycdn.com/videojs. Do not add a trailing slash.
+ *   Defaults to videojs_directory when using the local file path location
+ *   or whatever location the Libraries API determines.
+ *
+ * @return
+ *   The version found or NULL if no version found.
  */
-function videojs_get_version($directory = NULL) {
+function videojs_get_version($path = NULL) {
   $version = NULL;
 
   if (!isset($directory)) {
     $directory = variable_get('videojs_directory', 'sites/all/libraries/video-js');
   }
 
-  if (!file_exists($directory . '/video.js')) {
+  // When admins specify a protocol-relative URL, add http because file_get_contents doesn't understand it.
+  if (strncmp('//', $directory, 2) === 0) {
+    $directory = 'http:' . $directory;
+  }
+
+  // Don't use file_exists() because it doesn't work with URLs.
+  // Now admins can also refer to directories like http://mycdn.com/videojs.
+  $contents = @file_get_contents($directory . '/video.js', FALSE, NULL, 0, 400);
+
+  if (empty($contents)) {
     return NULL;
   }
-
-  // The archive containing version 4.0.0 contains no identifyable version number.
-  // @see https://github.com/videojs/video.js/issues/517.
-  if (file_exists($directory . '/video.dev.js')) {
-    $version = '4';
-  }
-
-  $contents = file_get_contents($directory . '/video.js');
 
   $matches = array();
   if (preg_match('/(?:v[ ]*|Version )([\d.]{2,})/i', $contents, $matches)) {
     $version = $matches[1];
+  }
+
+  // The archive containing version 4.0.0 contains no identifyable version number.
+  // @see https://github.com/videojs/video.js/issues/517.
+  $devversion = @file_get_contents($directory . '/video.dev.js', FALSE, NULL, 0, 10);
+  if (!empty($devversion)) {
+    $version = '4';
   }
 
   return $version;
