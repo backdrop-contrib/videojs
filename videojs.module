@@ -44,16 +44,6 @@ function videojs_theme() {
 }
 
 /**
- * Implements hook_views_api().
- */
-function videojs_views_api() {
-  return array(
-    'api' => 2,
-    'path' => drupal_get_path('module', 'videojs') . '/includes',
-  );
-}
-
-/**
  * Implements hook_field_formatter_info().
  */
 function videojs_field_formatter_info() {
@@ -315,15 +305,18 @@ function videojs_add($add = TRUE) {
 
   $directory = variable_get('videojs_directory', 'sites/all/libraries/video-js');
 
-  if (!file_exists($directory . '/video.min.js')) {
+  if (!file_exists($directory . '/video.js')) {
     return FALSE;
   }
 
-  $libjs = $directory . '/video.min.js';
-  $libcss = $directory . '/video-js.min.css';
+  $libjs = $directory . '/video.js';
+  $libcss = $directory . '/video-js.css';
+  // TODO: don't add the following when using CDN.
+  $libswf = '_V_.options.flash.swf = "' . file_create_url($directory . '/video-js.swf') . '"';
 
   if ($add && !$added) {
     drupal_add_js($libjs, array('group' => JS_LIBRARY));
+    drupal_add_js($libswf, array('group' => JS_LIBRARY, 'type' => 'inline'));
     drupal_add_css($libcss);
     $added = TRUE;
   }
@@ -331,6 +324,7 @@ function videojs_add($add = TRUE) {
   return array(
     'js' => array(
       $libjs => array('group' => JS_LIBRARY),
+      $libswf => array('group' => JS_LIBRARY, 'type' => 'inline'),
     ),
     'css' => array($libcss),
   );
@@ -353,10 +347,16 @@ function videojs_get_version($directory = NULL) {
     return NULL;
   }
 
+  // The archive containing version 4.0.0 contains no identifyable version number.
+  // @see https://github.com/videojs/video.js/issues/517.
+  if (file_exists($directory . '/video.dev.js')) {
+    $version = '4';
+  }
+
   $contents = file_get_contents($directory . '/video.js');
 
   $matches = array();
-  if (preg_match('/(?:v[ ]*|Version )([\d.]+)/i', $contents, $matches)) {
+  if (preg_match('/(?:v[ ]*|Version )([\d.]{2,})/i', $contents, $matches)) {
     $version = $matches[1];
   }
 
@@ -372,10 +372,11 @@ function videojs_libraries_info() {
   $libraries['video-js'] = array(
     'name' => 'Video.js',
     'vendor url' => 'http://videojs.com',
-    'download url' => 'https://github.com/zencoder/video-js/downloads',
+    'download url' => 'http://videojs.com',
     'version arguments' => array(
       'file' => 'video.js',
-      'pattern' => '/(?:v[ ]*|Version )([\d.]+)/i',
+      // TODO: The following pattern doesn't work for 4.0.0.
+      'pattern' => '/(?:v[ ]*|Version )([\d.]{2,})/i',
       'lines' => 10,
       'cols' => 50,
     ),
@@ -401,6 +402,26 @@ function videojs_libraries_info() {
               'files' => array(
                 'js' => array('video.min.js' => array('group' => JS_LIBRARY)),
                 'css' => array('video-js.min.css'),
+              ),
+            ),
+          ),
+        ),
+      ),
+      '4' => array(
+        'files' => array(
+          'js' => array('video.js' => array('group' => JS_LIBRARY)),
+          'css' => array('video-js.css'),
+        ),
+        'variants' => array(
+          'source' => array(
+            'files' => array(
+              'js' => array('video.dev.js' => array('group' => JS_LIBRARY)),
+              'css' => array('video-js.css'),
+            ),
+            'minified' => array(
+              'files' => array(
+                'js' => array('video.js' => array('group' => JS_LIBRARY)),
+                'css' => array('video-js.css'),
               ),
             ),
           ),

@@ -27,25 +27,27 @@ function videojs_settings_form() {
     '#type' => 'checkbox',
     '#title' => t('Auto-play files on page load'),
     '#description' => t('Use caution when combining this option with multiple players on the same page.'),
-    '#default_value' => variable_get('videojs_autoplay', ''),
+    '#default_value' => variable_get('videojs_autoplay', FALSE),
   );
 
   $form['options']['videojs_width'] = array(
     '#type' => 'textfield',
     '#title' => t('Player width'),
     '#default_value' => variable_get('videojs_width', 640),
+    '#element_validate' => array('_element_validate_integer_positive'),
   );
 
   $form['options']['videojs_height'] = array(
     '#type' => 'textfield',
     '#title' => t('Player height'),
     '#default_value' => variable_get('videojs_height', 360),
+    '#element_validate' => array('_element_validate_integer_positive'),
   );
 
-  $form = system_settings_form($form);
   $form['#validate'][] = 'videojs_settings_form_validate';
   $form['#submit'][] = 'videojs_settings_form_submit';
-  return $form;
+
+  return system_settings_form($form);
 }
 
 /**
@@ -62,5 +64,24 @@ function videojs_settings_form_validate($form, &$form_state) {
  * Submit handler for the videojs_settings_form() form.
  */
 function videojs_settings_form_submit($form, &$form_state) {
+  // Fix the variable types and make sure empty values are not saved.
+  variable_del('videojs_autoplay');
+  variable_del('videojs_width');
+  variable_del('videojs_height');
+
+  $form_state['values']['videojs_autoplay'] = $form_state['values']['videojs_autoplay'] == '1';
+  $form_state['values']['videojs_width'] = intval($form_state['values']['videojs_width']);
+  $form_state['values']['videojs_height'] = intval($form_state['values']['videojs_height']);
+
+  if (!$form_state['values']['videojs_autoplay']) {
+    unset($form_state['values']['videojs_autoplay']);
+  }
+  if ($form_state['values']['videojs_width'] == 0) {
+    unset($form_state['values']['videojs_width']);
+  }
+  if ($form_state['values']['videojs_height'] == 0) {
+    unset($form_state['values']['videojs_height']);
+  }
+
   drupal_set_message(t('The Video.js library (version @version) successfully found in the %directory directory.', array('@version' => $form_state['videojs_version'], '%directory' => $form_state['values']['videojs_directory'])));
 }

@@ -1,4 +1,4 @@
-# Video.js support module 2 for Drupal 7
+# Video.js support module 3 for Drupal 7
 
 ## Required dependencies
 
@@ -14,7 +14,7 @@
    such as `sites/all/modules` or `sites/[yoursite]/modules`.
 2. Download the Video.js library from http://videojs.com. Extract the module to
    `sites/all/libraries/video-js` and make sure that
-   `sites/all/libraries/video-js/video.min.js` exists.
+   `sites/all/libraries/video-js/video.js` exists.
 3. In your Drupal site, enable the module.
 4. If not yet created, create a File field for one of your content types at
    Structure -> Content types -> [type] -> Manage fields. Make sure
@@ -42,4 +42,5 @@ Video settings page (admin/config/media/video/players).
 
 ## Support
 
-Report bugs at http://drupal.org/project/issues/videojs
+Report bugs for the module at http://drupal.org/project/issues/videojs.
+Report bugs for the player at https://github.com/videojs/video.js/issues.
