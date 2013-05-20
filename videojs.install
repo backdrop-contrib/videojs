@@ -41,12 +41,17 @@ function videojs_requirements($phase) {
  * Implements hook_uninstall().
  */
 function videojs_uninstall() {
-  variable_del('videojs_directory');
-  variable_del('videojs_autoplay');
-  variable_del('videojs_width');
-  variable_del('videojs_height');
-  variable_del('videojs_skin');
   variable_del('videojs_location');
+  variable_del('videojs_directory');
+
+  module_load_include('inc', 'videojs', 'includes/videojs.utility');
+  $options = array_keys(videojs_utility::getDisplaySettings());
+  foreach ($options as $key) {
+    variable_del('videojs_' . $key);
+  }
+
+  // Obsolete variables.
+  variable_del('videojs_skin');
 }
 
 /**

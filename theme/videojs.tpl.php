@@ -11,9 +11,18 @@ if (!empty($autoplay)) {
 if (!empty($poster)) {
   $attrs .= ' poster="'. check_plain($poster) .'"';
 }
+if (!empty($loop)) {
+  $attrs .= ' loop="loop"';
+}
+if (empty($hidecontrols)) {
+  $attrs .= ' controls="controls"';
+}
+if (!empty($preload) && ($preload === 'none' || $preload === 'auto' || $preload === 'metadata')) {
+  $attrs .= ' preload="' . $preload . '"';
+}
 
 if (!empty($items)): ?>
-<video id="<?php print $player_id; ?>-video" data-setup="{}" class="video-js vjs-default-skin" width="<?php print($width) ?>" height="<?php print($height) ?>" controls="controls" preload="auto"<?php echo $attrs; ?>>
+<video id="<?php print $player_id; ?>-video" data-setup="{}" class="video-js vjs-default-skin" width="<?php print($width) ?>" height="<?php print($height) ?>"<?php echo $attrs; ?>>
 <?php foreach ($items as $item): ?>
   <source src="<?php print check_plain(file_create_url($item['uri'])) ?>" type="<?php print check_plain($item['videotype']) ?>" />
 <?php endforeach; ?>

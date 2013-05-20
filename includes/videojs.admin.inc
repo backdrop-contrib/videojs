@@ -48,28 +48,10 @@ function videojs_settings_form() {
     '#type' => 'fieldset',
     '#title' => t('Player defaults'),
     '#collapsible' => FALSE,
+    '#tree' => TRUE,
   );
 
-  $form['options']['videojs_autoplay'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Auto-play files on page load'),
-    '#description' => t('Use caution when combining this option with multiple players on the same page.'),
-    '#default_value' => variable_get('videojs_autoplay', FALSE),
-  );
-
-  $form['options']['videojs_width'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Player width'),
-    '#default_value' => variable_get('videojs_width', 640),
-    '#element_validate' => array('_element_validate_integer_positive'),
-  );
-
-  $form['options']['videojs_height'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Player height'),
-    '#default_value' => variable_get('videojs_height', 360),
-    '#element_validate' => array('_element_validate_integer_positive'),
-  );
+  videojs_utility::getDisplaySettingsForm($form['options']);
 
   $form['#validate'][] = 'videojs_settings_form_validate';
   $form['#submit'][] = 'videojs_settings_form_submit';
@@ -116,23 +98,18 @@ function videojs_settings_form_validate($form, &$form_state) {
  * Submit handler for the videojs_settings_form() form.
  */
 function videojs_settings_form_submit($form, &$form_state) {
-  // Fix the variable types and make sure empty values are not saved.
-  variable_del('videojs_autoplay');
-  variable_del('videojs_width');
-  variable_del('videojs_height');
+  $options = videojs_utility::getDisplaySettingsFormResults($form_state['values']['options']);
+  unset($form_state['values']['options']);
 
-  $form_state['values']['videojs_autoplay'] = $form_state['values']['videojs_autoplay'] == '1';
-  $form_state['values']['videojs_width'] = intval($form_state['values']['videojs_width']);
-  $form_state['values']['videojs_height'] = intval($form_state['values']['videojs_height']);
-
-  if (!$form_state['values']['videojs_autoplay']) {
-    unset($form_state['values']['videojs_autoplay']);
-  }
-  if ($form_state['values']['videojs_width'] == 0) {
-    unset($form_state['values']['videojs_width']);
-  }
-  if ($form_state['values']['videojs_height'] == 0) {
-    unset($form_state['values']['videojs_height']);
+  // Add the results to the form state so they will be saved by the system
+  // settings form submit handler.
+  foreach ($options as $k => $v) {
+    if (!empty($v)) {
+      $form_state['values']['videojs_' . $k] = $v;
+    }
+    else {
+      variable_del('videojs_' . $k);
+    }
   }
 
   if ($form_state['values']['videojs_location'] != 'cdn') {

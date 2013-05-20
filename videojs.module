@@ -35,11 +35,6 @@ function videojs_theme() {
       'template' => 'theme/videojs',
       'file' => 'includes/videojs.theme.inc',
     ),
-    'videojs_view' => array(
-      'variables' => array('items' => NULL, 'player_id' => NULL, 'attributes' => NULL),
-      'template' => 'theme/videojs',
-      'file' => 'includes/videojs.theme.inc',
-    ),
   );
 }
 
@@ -47,17 +42,20 @@ function videojs_theme() {
  * Implements hook_field_formatter_info().
  */
 function videojs_field_formatter_info() {
+  module_load_include('inc', 'videojs', 'includes/videojs.utility');
+  $options = videojs_utility::getDefaultDisplaySettings();
+  foreach (array_keys($options) as $key) {
+    $options[$key] = NULL;
+  }
+  $options['posterimage_field'] = NULL;
+  $options['posterimage_style'] = NULL;
+
   return array(
     'videojs' => array(
-      'label' => t('Video.js : HTML5 Video Player'),
+      'label' => t('Video.js'),
       'field types' => array('file', 'media', 'link_field'),
-      'description' => t('Display a video file as an HTML5-compatible with Flash-fallback video player.'),
-      'settings'  => array(
-        'width' => NULL,
-        'height' => NULL,
-        'posterimage_field' => NULL,
-        'posterimage_style' => NULL,
-      ),
+      'description' => t('Display a video file as an HTML5-compatible player with Flash-fallback.'),
+      'settings'  => $options,
     ),
   );
 }
@@ -109,6 +107,19 @@ function videojs_field_formatter_view($entity_type, $entity, $field, $instance, 
     $attributes['height'] = intval($settings['height']);
   }
 
+  if ($settings['autoplay'] !== NULL) {
+    $attributes['autoplay'] = $settings['autoplay'];
+  }
+  if ($settings['loop'] !== NULL) {
+    $attributes['loop'] = $settings['loop'];
+  }
+  if ($settings['hidecontrols'] !== NULL) {
+    $attributes['hidecontrols'] = $settings['hidecontrols'];
+  }
+  if ($settings['preload'] !== NULL) {
+    $attributes['preload'] = $settings['preload'];
+  }
+
   // Add the poster image
   if (!empty($settings['posterimage_field']) && !empty($entity->{$settings['posterimage_field']})) {
     $images = field_get_items($entity_type, $entity, $settings['posterimage_field']);
@@ -147,22 +158,7 @@ function videojs_field_formatter_settings_form($field, $instance, $view_mode, $f
     '#element_validate' => array('videojs_field_formatter_settings_form_validate'),
   );
 
-  $form['width'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Width'),
-    '#default_value' => $settings['width'],
-    '#size' => 6,
-    '#maxlength' => 5,
-    '#element_validate' => array('element_validate_integer_positive'),
-  );
-  $form['height'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Height'),
-    '#default_value' => $settings['height'],
-    '#size' => 6,
-    '#maxlength' => 5,
-    '#element_validate' => array('element_validate_integer_positive'),
-  );
+  videojs_utility::getDisplaySettingsForm($form, $settings);
 
   if (!empty($imagefields)) {
     $form['posterimage_field'] = array(
@@ -247,14 +243,22 @@ function _videojs_find_image_fields($field, $entity_type, $bundle) {
   return $imagefields;
 }
 
-function videojs_field_formatter_settings_form_validate($form, $form_state) {
-  $width = $form['width']['#value'];
-  $height = $form['height']['#value'];
+function videojs_field_formatter_settings_form_validate($form, &$form_state) {
+  $value = drupal_array_get_nested_value($form_state['values'], $form['#parents']);
+  $options = videojs_utility::getDisplaySettingsFormResults($value);
+  $value = array_merge($value, $options);
 
   // The fields need to be both entered or both empty
-  if (empty($width) != empty($height)) {
-    form_error($form[empty($width) ? 'height' : 'width'], t('The width and height field need to be both set or both empty.'));
+  if (empty($value['width']) != empty($value['height'])) {
+    form_error($form[empty($value['width']) ? 'height' : 'width'], t('The width and height field need to be both set or both empty.'));
   }
+
+  if (empty($value['width'])) {
+    $value['width'] = NULL;
+    $value['height'] = NULL;
+  }
+
+  drupal_array_set_nested_value($form_state['values'], $form['#parents'], $value);
 }
 
 /**
@@ -268,6 +272,19 @@ function videojs_field_formatter_settings_summary($field, $instance, $view_mode)
   $output = t('Player dimensions: @widthxheight', array(
     '@widthxheight' => !empty($settings['width']) && !empty($settings['height']) ? $settings['width'] . 'x' . $settings['height'] : t('default'),
   ));
+
+  if ($settings['loop']) {
+    $output .= '<br/>' . t('Loop playback');
+  }
+  if ($settings['autoplay']) {
+    $output .= '<br/>' . t('Auto-play files on page load');
+  }
+  if ($settings['hidecontrols']) {
+    $output .= '<br/>' . t('Hide controls');
+  }
+  if (!empty($settings['preload'])) {
+    $output .= '<br/>' . t('Preload behavior') . ': ' . check_plain($settings['preload']);
+  }
 
   if (!empty($settings['posterimage_field'])) {
     $imageinstance = field_info_instance($instance['entity_type'], $settings['posterimage_field'], $instance['bundle']);
@@ -291,12 +308,8 @@ function videojs_field_formatter_settings_summary($field, $instance, $view_mode)
 /**
  * Add the Video.js library to the page.
  */
-function videojs_add() {
+function videojs_add($add = TRUE) {
   $added = &drupal_static(__FUNCTION__);
-
-  if ($added) {
-    return TRUE;
-  }
 
   switch (variable_get('videojs_location', 'cdn')) {
     case 'path':
@@ -321,12 +334,30 @@ function videojs_add() {
       $remote = TRUE;
   }
 
-  drupal_add_js($path . '/video.js', array('group' => JS_LIBRARY, 'preprocess' => !$remote, 'type' => $remote ? 'external' : 'file'));
-  drupal_add_css($path . '/video-js.css', array('preprocess' => !$remote, 'type' => $remote ? 'external' : 'file'));
-  drupal_add_js('videojs.options.flash.swf = "' . file_create_url($path . '/video-js.swf') . '"', array('group' => JS_LIBRARY, 'type' => 'inline'));
+  $jsdata = $path . '/video.js';
+  $jsopts = array('group' => JS_LIBRARY, 'preprocess' => !$remote, 'type' => $remote ? 'external' : 'file');
+  $cssdata = $path . '/video-js.css';
+  $cssopts = array('preprocess' => !$remote, 'type' => $remote ? 'external' : 'file');
+  $swfdata = 'videojs.options.flash.swf = "' . file_create_url($path . '/video-js.swf') . '"';
+  $swfopts = array('group' => JS_LIBRARY, 'type' => 'inline');
 
-  $added = TRUE;
-  return TRUE;
+  if ($add && !$added) {
+    drupal_add_js($jsdata, $jsopts);
+    drupal_add_css($cssdata, $cssopts);
+    drupal_add_js($swfdata, $swfopts);
+
+    $added = TRUE;
+  }
+
+  return array(
+    'js' => array(
+      $jsdata => $jsopts,
+      $swfdata => $swfopts,
+    ),
+    'css' => array(
+      $cssdata => $cssopts,
+    ),
+  );
 }
 
 /**

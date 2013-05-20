@@ -4,7 +4,5 @@ package = Media
 core = 7.x
 dependencies[] = file
 configure = admin/config/media/videojs
-files[] = videojs.module
-files[] = includes/videojs.admin.inc
-files[] = includes/videojs.theme.inc
-files[] = includes/videojs.views.inc
+
+files[] = includes/videojs.utility.inc

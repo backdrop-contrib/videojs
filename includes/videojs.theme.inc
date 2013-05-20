@@ -26,9 +26,9 @@ function videojs_preprocess_videojs(&$vars) {
     'application/vnd.apple.mpegurl' => 'application/vnd.apple.mpegurl', // .m3u8
   );
 
-  $vars['width'] = !empty($vars['attributes']['width']) ? $vars['attributes']['width'] : variable_get('videojs_width', 640);
-  $vars['height'] = !empty($vars['attributes']['height']) ? $vars['attributes']['height'] : variable_get('videojs_height', 360);
-  $vars['autoplay'] = !!variable_get('videojs_autoplay', FALSE);
+  // Add the defaults to $vars['attributes'] and merge with $vars.
+  $options = videojs_utility::getDisplaySettings($vars['attributes']);
+  $vars = array_merge($vars, $options);
   $vars['items'] = array();
   $vars['poster'] = NULL;
 
