@@ -368,7 +368,7 @@ function videojs_get_version($path = NULL) {
   }
 
   // The archive containing version 4.0.0 contains no identifyable version number.
-  // @see https://github.com/videojs/video.js/issues/517.
+  // @see https://github.com/videojs/video.js/issues/517
   $devversion = @file_get_contents($directory . '/video.dev.js', FALSE, NULL, 0, 10);
   if (!empty($devversion)) {
     $version = '4';
@@ -389,7 +389,7 @@ function videojs_libraries_info() {
     'download url' => 'http://videojs.com',
     'version arguments' => array(
       'file' => 'video.js',
-      // TODO: The following pattern doesn't work for 4.0.0.
+      // @todo: The following pattern doesn't work for 4.0.0.
       'pattern' => '/(?:v[ ]*|Version )([\d.]{2,})/i',
       'lines' => 10,
       'cols' => 50,
