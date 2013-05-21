@@ -122,7 +122,7 @@ class videojs_utility {
     }
 
     include_once DRUPAL_ROOT . '/includes/iso.inc';
-    $languages = _locale_get_predefined_list();    
+    $languages = _locale_get_predefined_list();
 
     if (strlen($input) === 2 && isset($languages[strtolower($input)])) {
       $input = strtolower($input);
