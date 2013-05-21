@@ -102,4 +102,39 @@ class videojs_utility {
 
     return $settings;
   }
+
+  /**
+   * Tries to find a language based on the input
+   *
+   * @param $input
+   *   String containing a language code or language name.
+   *
+   * @return
+   *   NULL if nothing found, array with code and name if found.
+   */
+  public static function resolveLanguage($input) {
+    if (empty($input) || !is_string($input)) {
+      return NULL;
+    }
+    $input = trim($input);
+    if (strlen($input) < 2) {
+      return NULL;
+    }
+
+    include_once DRUPAL_ROOT . '/includes/iso.inc';
+    $languages = _locale_get_predefined_list();    
+
+    if (strlen($input) === 2 && isset($languages[strtolower($input)])) {
+      $input = strtolower($input);
+      return array($input, isset($languages[$input][1]) ? $languages[$input][1] : $languages[$input][0]);
+    }
+
+    foreach ($languages as $code => $lang) {
+      if ($lang[0] === $input || (isset($lang[1]) && $lang[1] === $input)) {
+        return array($code, $input);
+      }
+    }
+
+    return NULL;
+  }
 }

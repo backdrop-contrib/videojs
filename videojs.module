@@ -75,13 +75,12 @@ function videojs_field_formatter_view($entity_type, $entity, $field, $instance, 
     $links = $items;
     $items = array();
     foreach ($links as $link) {
+      $title = $link['title'];
+
       // Allow the user to override the mime type using the title field
-      if (!empty($link['title']) && strncmp('video/', $link['title'], 6) === 0) {
-        $mime = $link['title'];
-      }
-      // Manual override for WebM, because Drupal doesn't detect it.
-      elseif (substr($link['url'], -5) == '.webm') {
-        $mime = 'video/webm';
+      if (!empty($title) && (strncmp('video/', $title, 6) === 0 || strncmp('audio/', $title, 6) === 0 || strncmp('text/', $title, 5) === 0)) {
+        $mime = $title;
+        $title = '';
       }
       else {
         $mime = DrupalLocalStreamWrapper::getMimeType($link['url']);
@@ -96,6 +95,7 @@ function videojs_field_formatter_view($entity_type, $entity, $field, $instance, 
       $items[] = array(
         'uri' => url($link['url'], $link),
         'filemime' => $mime,
+        'description' => $title,
       );
     }
   }
@@ -476,4 +476,24 @@ function videojs_libraries_info() {
   );
 
   return $libraries;
+}
+
+/**
+ * Implements hook_file_mimetype_mapping_alter().
+ *
+ * Adds the vtt, webm and weba extensions.
+ */
+function videojs_file_mimetype_mapping_alter(&$mapping) {
+  if (!isset($mapping['extensions']['vtt'])) {
+    $mapping['mimetypes']['vtt'] = 'text/vtt';
+    $mapping['extensions']['vtt'] = 'vtt';
+  }
+  if (!isset($mapping['extensions']['webm'])) {
+    $mapping['mimetypes']['webm'] = 'video/webm';
+    $mapping['extensions']['webm'] = 'webm';
+  }
+  if (!isset($mapping['extensions']['weba'])) {
+    $mapping['mimetypes']['weba'] = 'audio/weba';
+    $mapping['extensions']['weba'] = 'weba';
+  }
 }
