@@ -335,11 +335,11 @@ function videojs_add($add = TRUE) {
   }
 
   $jsdata = $path . '/video.js';
-  $jsopts = array('group' => JS_LIBRARY, 'preprocess' => !$remote, 'type' => $remote ? 'external' : 'file');
+  $jsopts = array('group' => JS_LIBRARY, 'preprocess' => !$remote, 'type' => $remote ? 'external' : 'file', 'weight' => 1);
   $cssdata = $path . '/video-js.css';
   $cssopts = array('preprocess' => !$remote, 'type' => $remote ? 'external' : 'file');
   $swfdata = 'videojs.options.flash.swf = "' . file_create_url($path . '/video-js.swf') . '"';
-  $swfopts = array('group' => JS_LIBRARY, 'type' => 'inline');
+  $swfopts = array('group' => JS_LIBRARY, 'type' => 'inline', 'weight' => 5);
 
   if ($add && !$added) {
     drupal_add_js($jsdata, $jsopts);
