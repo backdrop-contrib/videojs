@@ -388,21 +388,11 @@ function videojs_get_version($path = NULL) {
   // Don't use file_exists() because it doesn't work with URLs.
   // Now admins can also refer to directories like http://mycdn.com/videojs.
   $contents = @file_get_contents($path . '/video.js', FALSE, NULL, 0, 400);
-
-  if (empty($contents)) {
-    return NULL;
-  }
-
-  $matches = array();
-  if (preg_match('/(?:v[ ]*|Version )([\d.]{2,})/i', $contents, $matches)) {
-    $version = $matches[1];
-  }
-
-  // The archive containing version 4.0.0 contains no identifyable version number.
-  // @see https://github.com/videojs/video.js/issues/517
-  $devversion = @file_get_contents($path . '/video.dev.js', FALSE, NULL, 0, 10);
-  if (!empty($devversion)) {
-    $version = '4';
+  if (!empty($contents)) {
+    $matches = array();
+    if (preg_match('/(?:v[ ]*|Version )([\d.]{2,})/i', $contents, $matches)) {
+      $version = $matches[1];
+    }
   }
 
   return $version;
@@ -420,9 +410,8 @@ function videojs_libraries_info() {
     'download url' => 'http://videojs.com',
     'version arguments' => array(
       'file' => 'video.js',
-      // @todo: The following pattern doesn't work for 4.0.0.
       'pattern' => '/(?:v[ ]*|Version )([\d.]{2,})/i',
-      'lines' => 10,
+      'lines' => 2,
       'cols' => 50,
     ),
     'versions' => array(
