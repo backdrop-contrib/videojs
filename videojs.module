@@ -49,6 +49,7 @@ function videojs_field_formatter_info() {
   }
   $options['posterimage_field'] = NULL;
   $options['posterimage_style'] = NULL;
+  $options['tracks_field'] = NULL;
 
   return array(
     'videojs' => array(
@@ -71,34 +72,7 @@ function videojs_field_formatter_view($entity_type, $entity, $field, $instance, 
     return array();
   }
 
-  if ($field['type'] == 'link_field') {
-    $links = $items;
-    $items = array();
-    foreach ($links as $link) {
-      $title = $link['title'];
-
-      // Allow the user to override the mime type using the title field
-      if (!empty($title) && (strncmp('video/', $title, 6) === 0 || strncmp('audio/', $title, 6) === 0 || strncmp('text/', $title, 5) === 0)) {
-        $mime = $title;
-        $title = '';
-      }
-      else {
-        $mime = DrupalLocalStreamWrapper::getMimeType($link['url']);
-
-        // If the mime type is application/octet-stream, default to MP4.
-        // This happens for instance for links without extensions.
-        if ($mime == 'application/octet-stream') {
-          $mime = 'video/mp4';
-        }
-      }
-
-      $items[] = array(
-        'uri' => url($link['url'], $link),
-        'filemime' => $mime,
-        'description' => $title,
-      );
-    }
-  }
+  videojs_utility::normalizeFieldItems($field['field_name'], $items, 'video/mp4');
 
   $settings = $display['settings'];
   $attributes = array();
@@ -120,11 +94,72 @@ function videojs_field_formatter_view($entity_type, $entity, $field, $instance, 
     $attributes['preload'] = $settings['preload'];
   }
 
-  // Add the poster image
+  // Add the poster image.
   if (!empty($settings['posterimage_field']) && !empty($entity->{$settings['posterimage_field']})) {
     $images = field_get_items($entity_type, $entity, $settings['posterimage_field']);
     if (!empty($images)) {
+      videojs_utility::normalizeFieldItems($settings['posterimage_field'], $images, 'image/jpeg', 'image/');
       array_unshift($items, array_shift($images));
+    }
+  }
+
+  // Add the text tracks.
+  if (!empty($settings['tracks_field'])) {
+    $tracks = field_get_items($entity_type, $entity, $settings['tracks_field']);
+    if (!empty($tracks)) {
+      videojs_utility::normalizeFieldItems($settings['tracks_field'], $tracks, 'text/vtt', 'text/vtt');
+      $items = array_merge($items, $tracks);
+    }
+  }
+
+  // Post-process tracks.
+  $hastracks = FALSE;
+  foreach ($items as &$item) {
+    if ($item['filemime'] != 'text/vtt') {
+      continue;
+    }
+
+    // Try to find the language for subtitles by reading the description field.
+    if (empty($item['langcode']) && !empty($item['description'])) {
+      $language = videojs_utility::resolveLanguage($item['description']);
+      if ($language !== NULL) {
+        $item['langcode'] = $language[0];
+        if (empty($item['label'])) {
+          $item['label'] = $language[1];
+        }
+      }
+    }
+
+    $hastracks = TRUE;
+  }
+
+  // Select the default track.
+  if ($hastracks && !empty($settings['defaulttrack'])) {
+    foreach ($items as &$item) {
+      if ($item['filemime'] != 'text/vtt') {
+        continue;
+      }
+
+      switch ($settings['defaulttrack']) {
+        case 'first':
+          $item['default'] = TRUE;
+          break 2;
+
+        case 'user':
+          global $language;
+          if ($item['langcode'] == $language->language) {
+            $item['default'] = TRUE;
+            break 2;
+          }
+          break;
+
+        default:
+          if ($item['langcode'] == $settings['defaulttrack']) {
+            $item['default'] = TRUE;
+            break 2;
+          }
+          break;
+      }
     }
   }
 
@@ -151,7 +186,11 @@ function videojs_field_formatter_settings_form($field, $instance, $view_mode, $f
   $settings = $display['settings'];
   $image_styles = image_style_options(FALSE);
   if (isset($instance['entity_type']) && isset($instance['bundle'])) {
-    $imagefields = _videojs_find_image_fields($field, $instance['entity_type'], $instance['bundle']);
+    $imagefields = videojs_utility::findFieldsByType($field, $instance['entity_type'], $instance['bundle'], array('image', 'link', 'file'));
+    unset($imagefields[$field['field_name']]);
+
+    $trackfields = videojs_utility::findFieldsByType($field, $instance['entity_type'], $instance['bundle'], array('link', 'file'));
+    unset($trackfields[$field['field_name']]);
   }
 
   $form = array(
@@ -167,80 +206,44 @@ function videojs_field_formatter_settings_form($field, $instance, $view_mode, $f
       '#default_value' => $settings['posterimage_field'],
       '#options' => $imagefields,
       '#description' => t('If an image is uploaded to the field above it will be used as the poster image.'),
-      '#empty_value' => NULL,
-      '#empty_option' => t('- None -'),
+      '#empty_value' => '',
     );
     $form['posterimage_style'] = array(
-      '#title' => t('Poster image style'),
       '#type' => 'select',
+      '#title' => t('Poster image style'),
       '#default_value' => $settings['posterimage_style'],
       '#empty_option' => t('None (original image)'),
       '#description' => t('The original video thumbnail will be displayed. Otherwise, you can add a custom image style at !settings.', array('!settings' => l(t('media image styles'), 'admin/config/media/image-styles'))),
       '#options' => $image_styles,
     );
+
+    if ($field['type'] == 'file') {
+      $form['posterimage_field']['#description'] .= ' ' . t('Images uploaded to this field will be used as poster image by default.');
+    }
+    if ($field['type'] == 'link_field') {
+      $form['posterimage_field']['#description'] .= ' ' . t('Images referenced by this field will be used as poster image by default.');
+    }
+  }
+
+  if (!empty($trackfields)) {
+    $form['tracks_field'] = array(
+      '#type' => 'select',
+      '#title' => t('Field containing text tracks'),
+      '#default_value' => $settings['tracks_field'],
+      '#options' => $trackfields,
+      '#description' => t('VTT text tracks can be read from a separate field for this content type.'),
+      '#empty_value' => '',
+    );
+
+    if ($field['type'] == 'file') {
+      $form['tracks_field']['#description'] .= ' ' . t('VTT files uploaded to this field will be used by default.');
+    }
+    if ($field['type'] == 'link_field') {
+      $form['tracks_field']['#description'] .= ' ' . t('VTT files referenced by this field will be used by default.');
+    }
   }
 
   return $form;
-}
-
-/**
- * Finds image fields in the given entity and bundle.
- *
- * @param $field
- *   Field definition of the video field, used to match image fields when
- *   this field is rendered using Views.
- * @param $entity_type
- *   Entity type in which the image field must occur.
- * @param $bundle
- *   Bundle in which the image field must occur.
- * @return
- *   Array of image field names.
- */
-function _videojs_find_image_fields($field, $entity_type, $bundle) {
-  $imagefields = array();
-
-  // Determine the image fields that will be selectable.
-  if ($entity_type == 'ctools' && $bundle == 'ctools') {
-    // This is a fake instance (see ctools_fields_fake_field_instance()).
-    // This occurs for instance when this formatter is used in Views.
-    // Display all image fields in bundles that contain this field.
-    $otherfields = field_info_fields();
-    foreach ($otherfields as $otherfield) {
-      if ($otherfield['type'] == 'image' && !empty($otherfield['bundles'])) {
-        // Find a label by finding an instance label
-        $instancelabels = array();
-        $bundles_names = array();
-
-        foreach ($otherfield['bundles'] as $otherentitytype => $otherbundles) {
-          foreach ($otherbundles as $otherbundle) {
-            // Check if this image field appears in one of the video field bundles.
-            if (isset($field['bundles'][$otherentitytype]) && in_array($otherbundle, $field['bundles'][$otherentitytype])) {
-              $otherinstance = field_info_instance($otherentitytype, $otherfield['field_name'], $otherbundle);
-              $instancelabels[$otherinstance['label']] = isset($instancelabels[$otherinstance['label']]) ? $instancelabels[$otherinstance['label']] + 1 : 1;
-              $bundles_names[] = t('@entity:@bundle', array('@entity' => $otherentitytype, '@bundle' => $otherbundle));
-            }
-          }
-        }
-
-        if (!empty($instancelabels)) {
-          arsort($instancelabels);
-          $instancelabel = key($instancelabels);
-          $imagefields[$otherfield['field_name']] = $instancelabel . ' — ' . t('Appears in: @bundles.', array('@bundles' => implode(', ', $bundles_names)));
-        }
-      }
-    }
-  }
-  else {
-    $otherinstances = field_info_instances($entity_type, $bundle);
-    foreach ($otherinstances as $otherinstance) {
-      $otherfield = field_info_field_by_id($otherinstance['field_id']);
-      if ($otherfield['type'] == 'image') {
-        $imagefields[$otherinstance['field_name']] = $otherinstance['label'];
-      }
-    }
-  }
-
-  return $imagefields;
 }
 
 function videojs_field_formatter_settings_form_validate($form, &$form_state) {

@@ -86,7 +86,7 @@ player in code. The theme function has the following variables:
     image file (for the poster image) or VTT file (for subtitles).
   - `filemime` (required): mime type of the file.
   - `langcode` (vtt only): language code.
-  - `description` (vtt only): description (label) of the track.
+  - `label` (vtt only): label of the track.
   - `default` (vtt only): whether the track is selected by default.
   - `charset` (vtt only): the character set of the track.
   - `kind` (vtt only): the kind of track: subtitles, captions, descriptions, 

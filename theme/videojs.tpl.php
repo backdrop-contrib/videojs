@@ -56,9 +56,9 @@ if (!empty($items)): ?>
   <source src="<?php print check_plain(file_create_url($item['uri'])) ?>" type="<?php print check_plain($item['videotype']) ?>" />
 <?php endforeach; ?>
 <?php foreach ($tracks as $track):
-// @todo: "default" attribute
+  $default = $track['default'] ? ' default="default"' : '';
 ?>
-  <track src="<?php print check_plain(file_create_url($track['uri'])) ?>" type="<?php print check_plain($track['filemime']) ?>" kind="<?php print check_plain($track['kind']) ?>" label="<?php print check_plain($track['description']) ?>" langcode="<?php print check_plain($track['langcode']) ?>" />
+  <track src="<?php print check_plain(file_create_url($track['uri'])) ?>" type="<?php print check_plain($track['filemime']) ?>" kind="<?php print check_plain($track['kind']) ?>" label="<?php print check_plain($track['label']) ?>" langcode="<?php print check_plain($track['langcode']) ?>"<?php print $default; ?> />
 <?php endforeach; ?>
 </video>
 <?php endif;

@@ -46,26 +46,13 @@ function videojs_preprocess_videojs(&$vars) {
 
       // Filter out tracks.
       if (strncmp($item['filemime'], 'text/vtt', 8) === 0) {
-        $item = $item + array(
+        $vars['tracks'][] = $item + array(
           'default' => FALSE,
           'kind' => 'subtitles',
           'charset' => 'utf-8',
-          'description' => '',
+          'label' => '',
           'langcode' => '',
         );
-
-        // Try to find the language for subtitles.
-        if (empty($item['langcode'])) {
-          $language = videojs_utility::resolveLanguage($item['description']);
-          if ($language !== NULL) {
-            $item['langcode'] = $language[0];
-            if (empty($item['description'])) {
-              $item['description'] = $language[1];
-            }
-          }
-        }
-
-        $vars['tracks'][] = $item;
       }
 
       // Skip unplayable items.
@@ -77,8 +64,8 @@ function videojs_preprocess_videojs(&$vars) {
     $vars['items'][] = $item;
   }
 
-  // Turn the poster image URI into a URL
-  if (!empty($vars['poster'])) {
+  // Turn the poster image URI into a URL, if it isn't an URL already.
+  if (!empty($vars['poster']) && strncmp($vars['poster'], 'http://', 7) !== 0  && strncmp($vars['poster'], 'https://', 8) !== 0) {
     if (empty($vars['posterimage_style'])) {
       $vars['poster'] = file_create_url($vars['poster']);
     }
