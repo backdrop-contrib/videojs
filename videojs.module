@@ -376,18 +376,18 @@ function videojs_add($add = TRUE) {
 function videojs_get_version($path = NULL) {
   $version = NULL;
 
-  if (!isset($directory)) {
-    $directory = variable_get('videojs_directory', 'sites/all/libraries/video-js');
+  if (!isset($path)) {
+    $path = variable_get('videojs_directory', 'sites/all/libraries/video-js');
   }
 
   // When admins specify a protocol-relative URL, add http because file_get_contents doesn't understand it.
-  if (strncmp('//', $directory, 2) === 0) {
-    $directory = 'http:' . $directory;
+  if (strncmp('//', $path, 2) === 0) {
+    $path = 'http:' . $path;
   }
 
   // Don't use file_exists() because it doesn't work with URLs.
   // Now admins can also refer to directories like http://mycdn.com/videojs.
-  $contents = @file_get_contents($directory . '/video.js', FALSE, NULL, 0, 400);
+  $contents = @file_get_contents($path . '/video.js', FALSE, NULL, 0, 400);
 
   if (empty($contents)) {
     return NULL;
@@ -400,7 +400,7 @@ function videojs_get_version($path = NULL) {
 
   // The archive containing version 4.0.0 contains no identifyable version number.
   // @see https://github.com/videojs/video.js/issues/517
-  $devversion = @file_get_contents($directory . '/video.dev.js', FALSE, NULL, 0, 10);
+  $devversion = @file_get_contents($path . '/video.dev.js', FALSE, NULL, 0, 10);
   if (!empty($devversion)) {
     $version = '4';
   }
