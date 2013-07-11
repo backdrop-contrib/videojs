@@ -35,6 +35,12 @@ function videojs_theme() {
       'template' => 'theme/videojs',
       'file' => 'includes/videojs.theme.inc',
     ),
+    // Special theme function for use in wysiwyg editors via the media module.
+    'videojs_media_wysiwyg_preview' => array(
+      'variables' => array('items' => NULL, 'player_id' => NULL, 'attributes' => NULL, 'entity' => NULL, 'entity_type' => NULL, 'posterimage_style' => NULL),
+      'template' => 'theme/videojs-media-wysiwyg-preview',
+      'file' => 'includes/videojs.theme.inc',
+    ),
   );
 }
 
@@ -163,10 +169,31 @@ function videojs_field_formatter_view($entity_type, $entity, $field, $instance, 
     }
   }
 
+  $themefunction = 'videojs';
+
+  // Special handling for file entity based videos that can be added using the media module.
+  if ($entity_type == 'file' && !empty($entity->override)) {
+    if (!empty($entity->override['wysiwyg'])) {
+      // When in wysiwyg mode, use a special theme function because
+      // media only handles images or spans in the wysiwyg area.
+      $themefunction = 'videojs_media_wysiwyg_preview';
+    }
+    elseif (!empty($entity->override['attributes'])) {
+      // Allow the user to override width and height by resizing the player
+      // in the wysiwyg area.
+      if (!empty($entity->override['attributes']['width'])) {
+        $attributes['width'] = intval($entity->override['attributes']['width']);
+      }
+      if (!empty($entity->override['attributes']['height'])) {
+        $attributes['height'] = intval($entity->override['attributes']['height']);
+      }
+    }
+  }
+
   list($id, $vid, $bundle) = entity_extract_ids($entity_type, $entity);
   return array(
     array(
-      '#theme' => 'videojs',
+      '#theme' => $themefunction,
       '#items' => $items,
       '#player_id' => 'videojs-' . $id . '-' . str_replace('_', '-', $instance['field_name']),
       '#attached' => videojs_add(FALSE),
@@ -185,11 +212,26 @@ function videojs_field_formatter_settings_form($field, $instance, $view_mode, $f
   $display = $instance['display'][$view_mode];
   $settings = $display['settings'];
   $image_styles = image_style_options(FALSE);
+
+  $entity_type = NULL;
+  $bundle = NULL;
   if (isset($instance['entity_type']) && isset($instance['bundle'])) {
-    $imagefields = videojs_utility::findFieldsByType($field, $instance['entity_type'], $instance['bundle'], array('image', 'link', 'file'));
+    $entity_type = $instance['entity_type'];
+    $bundle = $instance['bundle'];
+  }
+  elseif (isset($form['#file_type'])) {
+    // The file entity module does not supply the entity type and bundle like
+    // Drupal core does.
+    // @todo: file a feature request.
+    $entity_type = 'file';
+    $bundle = $form['#file_type'];
+  }
+
+  if ($entity_type != NULL && $bundle != NULL) {
+    $imagefields = videojs_utility::findFieldsByType($field, $entity_type, $bundle, array('image', 'link', 'file'));
     unset($imagefields[$field['field_name']]);
 
-    $trackfields = videojs_utility::findFieldsByType($field, $instance['entity_type'], $instance['bundle'], array('link', 'file'));
+    $trackfields = videojs_utility::findFieldsByType($field, $entity_type, $bundle, array('link', 'file'));
     unset($trackfields[$field['field_name']]);
   }
 

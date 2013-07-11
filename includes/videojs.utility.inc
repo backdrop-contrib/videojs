@@ -257,6 +257,15 @@ class videojs_utility {
         );
       }
     }
+    else {
+      // Make sure the item is fully loaded. Image fields of file entities can only have a fid and no additional data.
+      foreach ($items as $key => $item) {
+        if (isset($item['fid']) && !isset($item['filemime']) && $item['fid'] > 0) {
+          $file = file_load($item['fid']);
+          $items[$key] = $item + (array)$file;
+        }
+      }
+    }
 
     if (!empty($mimefilter)) {
       $filterlength = strlen($mimefilter);
