@@ -31,6 +31,12 @@
  *   Boolean indicating whether to not show the controls.
  * $preload
  *   String containing none, auto or metadata.
+ * $width
+ *   Integer containing width of the video.
+ * $height
+ *   Integer containing height of the video.
+ * $class
+ *   String containing concatenated classes of the video.
  */
 
 $attrs = '';
@@ -50,8 +56,15 @@ if (!empty($preload) && ($preload === 'none' || $preload === 'auto' || $preload 
   $attrs .= ' preload="' . $preload . '"';
 }
 
+if(!empty($class)) {
+  $class .= ' video-js vjs-default-skin';
+}
+else {
+  $class = 'video-js vjs-default-skin';
+}
+
 if (!empty($items)): ?>
-<video id="<?php print $player_id; ?>-video" data-setup="{}" class="video-js vjs-default-skin" width="<?php print($width) ?>" height="<?php print($height) ?>"<?php echo $attrs; ?>>
+<video id="<?php print $player_id; ?>-video" data-setup="{}" class="<?php print htmlspecialchars($class); ?>" width="<?php print $width; ?>" height="<?php print $height; ?>"<?php echo $attrs; ?>>
 <?php foreach ($items as $item): ?>
   <source src="<?php print check_plain(file_create_url($item['uri'])) ?>" type="<?php print check_plain($item['videotype']) ?>" />
 <?php endforeach; ?>

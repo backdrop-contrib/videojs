@@ -187,6 +187,15 @@ function videojs_field_formatter_view($entity_type, $entity, $field, $instance, 
       if (!empty($entity->override['attributes']['height'])) {
         $attributes['height'] = intval($entity->override['attributes']['height']);
       }
+      if (!empty($entity->override['attributes']['class'])) {
+        $attributes['class'] = $entity->override['attributes']['class'];
+      }
+      else {
+        $attributes['class'] = array();
+      }
+      $attributes['class'][] = 'videojs-' . $entity->fid;
+      $attributes['class'][] = 'videojs-' . $entity->type;
+      dpm($entity);
     }
   }
 

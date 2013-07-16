@@ -32,6 +32,11 @@ function videojs_preprocess_videojs(&$vars) {
   $vars['items'] = array();
   $vars['tracks'] = array();
   $vars['poster'] = NULL;
+  $vars['class'] = '';
+
+  if (!empty($vars['attributes']['class'])) {
+    $vars['class'] = implode(' ', $vars['attributes']['class']);
+  }
 
   foreach ($items as $item) {
     if (empty($item['filemime'])) {
