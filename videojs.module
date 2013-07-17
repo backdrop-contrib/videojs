@@ -195,7 +195,6 @@ function videojs_field_formatter_view($entity_type, $entity, $field, $instance, 
       }
       $attributes['class'][] = 'videojs-' . $entity->fid;
       $attributes['class'][] = 'videojs-' . $entity->type;
-      dpm($entity);
     }
   }
 
