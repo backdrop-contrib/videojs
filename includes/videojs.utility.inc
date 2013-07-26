@@ -62,7 +62,7 @@ class videojs_utility {
       ),
       '#empty_value' => '',
       '#empty_option' => t('No default track'),
-      '#default_value' => !empty($values['select']) ? $values['select'] : NULL,
+      '#default_value' => !empty($values['defaulttrack']) ? $values['defaulttrack'] : NULL,
       '#description' => t('When you are using VTT subtitle tracks, select which one should be activated by default.'),
     );
 
