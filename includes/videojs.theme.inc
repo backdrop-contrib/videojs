@@ -39,6 +39,13 @@ function videojs_preprocess_videojs(&$vars) {
   }
 
   foreach ($items as $item) {
+    
+    // Add src variables.
+    if (!empty($item['uri'])) {
+      $src = file_create_url($item['uri']);
+      $item['src'] = array('raw' => $src, 'safe' => check_plain($src));
+    }
+    
     if (empty($item['filemime'])) {
       continue;
     }
@@ -51,6 +58,8 @@ function videojs_preprocess_videojs(&$vars) {
 
       // Filter out tracks.
       if (strncmp($item['filemime'], 'text/vtt', 8) === 0) {
+        // Add raw/safe for videotype var.
+        $item['filemime'] = array('raw' => $item['filemime'], 'safe' => check_plain($item['filemime']));
         $vars['tracks'][] = $item + array(
           'default' => FALSE,
           'kind' => 'subtitles',
@@ -64,7 +73,8 @@ function videojs_preprocess_videojs(&$vars) {
       continue;
     }
 
-    $item['videotype'] = $codecs[$item['filemime']];
+    // Add raw/safe for videotype var.
+    $item['videotype'] = array('raw' => $codecs[$item['filemime']], 'safe' => check_plain($codecs[$item['filemime']]));
 
     $vars['items'][] = $item;
   }
@@ -91,6 +101,7 @@ function videojs_preprocess_videojs_media_wysiwyg_preview(&$vars) {
   // it is loaded.
   if (empty($vars['poster'])) {
     $poster = drupal_get_path('module', 'media') . '/images/icons/default/video-x-generic.png';
-    $vars['poster'] = file_create_url($poster);
+    $raw = file_create_url($poster);
+    $vars['poster'] = array('raw' => $raw, 'safe' => check_plain($raw));
   }
 }

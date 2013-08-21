@@ -66,12 +66,12 @@ else {
 if (!empty($items)): ?>
 <video id="<?php print $player_id; ?>-video" data-setup="{}" class="<?php print htmlspecialchars($class); ?>" width="<?php print $width; ?>" height="<?php print $height; ?>"<?php echo $attrs; ?>>
 <?php foreach ($items as $item): ?>
-  <source src="<?php print check_plain(file_create_url($item['uri'])) ?>" type="<?php print check_plain($item['videotype']) ?>" />
+  <source src="<?php print $item['src']['safe']; ?>" type="<?php print $item['videotype']['safe'] ?>" />
 <?php endforeach; ?>
 <?php foreach ($tracks as $track):
   $default = $track['default'] ? ' default="default"' : '';
 ?>
-  <track src="<?php print check_plain(file_create_url($track['uri'])) ?>" type="<?php print check_plain($track['filemime']) ?>" kind="<?php print check_plain($track['kind']) ?>" label="<?php print check_plain($track['label']) ?>" srclang="<?php print check_plain($track['langcode']) ?>"<?php print $default; ?> />
+  <track src="<?php print $track['src']['safe'] ?>" type="<?php print $track['filemime']['safe'] ?>" kind="<?php print check_plain($track['kind']) ?>" label="<?php print check_plain($track['label']) ?>" srclang="<?php print check_plain($track['langcode']) ?>"<?php print $default; ?> />
 <?php endforeach; ?>
 </video>
 <?php endif;

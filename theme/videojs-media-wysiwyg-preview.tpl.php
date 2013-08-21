@@ -7,4 +7,4 @@
  * Same as videojs.tpl.php.
  */
 ?>
- <img src="<?php print check_plain($poster); ?>" width="<?php print $width; ?>" height="<?php print $height; ?>" />
+ <img src="<?php print $poster['safe']; ?>" width="<?php print $width; ?>" height="<?php print $height; ?>" />
