@@ -17,19 +17,19 @@ class videojs_utility {
     }
 
     $element['width'] = array(
-      '#type' => 'textfield',
+      '#type' => 'number',
       '#title' => t('Player width'),
       '#default_value' => !empty($values['width']) ? intval($values['width']) : '',
-      '#element_validate' => array('_element_validate_integer_positive'),
+      '#min' => 0,
       '#maxlength' => 10,
       '#size' => 10,
     );
 
     $element['height'] = array(
-      '#type' => 'textfield',
+      '#type' => 'number',
       '#title' => t('Player height'),
       '#default_value' => !empty($values['height']) ? intval($values['height']) : '',
-      '#element_validate' => array('_element_validate_integer_positive'),
+      '#min' => 0,
       '#maxlength' => 10,
       '#size' => 10,
     );
@@ -68,7 +68,7 @@ class videojs_utility {
 
     foreach (language_list() as $language) {
       $languagename = empty($language->native) ? $language->name : $language->native;
-      $element['defaulttrack']['#options'][$language->language] = $languagename;
+      $element['defaulttrack']['#options'][$language->langcode] = $languagename;
     }
 
     $element['preload'] = array(

@@ -54,9 +54,6 @@ function videojs_settings_form() {
 
   videojs_utility::getDisplaySettingsForm($form['options']);
 
-  $form['#validate'][] = 'videojs_settings_form_validate';
-  $form['#submit'][] = 'videojs_settings_form_submit';
-
   // Add a submit button
   $form['actions']['#type'] = 'actions';
   $form['actions']['submit'] = array(
