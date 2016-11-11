@@ -39,32 +39,8 @@
  *   String containing concatenated classes of the video.
  */
 
-$attrs = '';
-if (!empty($autoplay)) {
-  $attrs .= ' autoplay="autoplay"';
-}
-if (!empty($poster)) {
-  $attrs .= ' poster="'. check_plain($poster) .'"';
-}
-if (!empty($loop)) {
-  $attrs .= ' loop="loop"';
-}
-if (empty($hidecontrols)) {
-  $attrs .= ' controls="controls"';
-}
-if (!empty($preload) && ($preload === 'none' || $preload === 'auto' || $preload === 'metadata')) {
-  $attrs .= ' preload="' . $preload . '"';
-}
-
-if(!empty($class)) {
-  $class .= ' video-js vjs-default-skin';
-}
-else {
-  $class = 'video-js vjs-default-skin';
-}
-
 if (!empty($items)): ?>
-<video id="<?php print $player_id; ?>-video" data-setup="{}" class="<?php print htmlspecialchars($class); ?>" width="<?php print $width; ?>" height="<?php print $height; ?>"<?php echo $attrs; ?>>
+<video <?php print backdrop_attributes($attributes); ?>>
 <?php foreach ($items as $item): ?>
   <source src="<?php print $item['src']['safe']; ?>" type="<?php print $item['videotype']['safe'] ?>" />
 <?php endforeach; ?>

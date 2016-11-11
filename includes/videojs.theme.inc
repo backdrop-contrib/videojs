@@ -26,17 +26,45 @@ function videojs_preprocess_videojs(&$vars) {
     'application/vnd.apple.mpegurl' => 'application/vnd.apple.mpegurl', // .m3u8
   );
 
-  // Add the defaults to $vars['video_attributes'] and merge with $vars.
-  $options = videojs_utility::getDisplaySettings($vars['video_attributes']);
-  $vars = array_merge($vars, $options);
+  $settings = videojs_utility::getDisplaySettings($vars['video_attributes']);
+  $vars['attributes']['data-setup'] = '{}';
+
+  // Set the element ID
+  $vars['attributes']['id'] = $vars['player_id'] . '-video';
+
+  // Set the video's width and height
+  $vars['attributes']['width'] = $settings['width'];
+  $vars['attributes']['height'] = $settings['height'];
+
+  // Set preload.
+  $vars['attributes']['preload'] = $settings['preload'];
+
+  // Default classes.
+  $vars['attributes']['class'] = array(
+    'video-js',
+    'vjs-default-skin',
+  );
+
+  // Define empty poster attribute.
+  $vars['attributes']['poster'] = NULL;
+
+  // Display or hide the controls.
+  if (!$settings['hidecontrols']) {
+    $vars['attributes']['controls'] = 'controls';
+  }
+
+  // Display or hide the controls.
+  if ($settings['loop']) {
+    $vars['attributes']['loop'] = 'loop';
+  }
+
+  // Allow autoplay
+  if ($settings['autoplay']) {
+    $vars['attributes']['autoplay'] = 'autoplay';
+  }
+
   $vars['items'] = array();
   $vars['tracks'] = array();
-  $vars['poster'] = NULL;
-  $vars['class'] = '';
-
-  if (!empty($vars['attributes']['class'])) {
-    $vars['class'] = implode(' ', $vars['attributes']['class']);
-  }
 
   foreach ($items as $item) {
     
@@ -53,7 +81,7 @@ function videojs_preprocess_videojs(&$vars) {
     if (!isset($codecs[$item['filemime']])) {
       // check for image file and add in it as poster
       if (strncmp($item['filemime'], 'image/', 6) === 0) {
-        $vars['poster'] = $item['uri'];
+        $settings['poster'] = $item['uri'];
       }
 
       // Filter out tracks.
@@ -80,12 +108,12 @@ function videojs_preprocess_videojs(&$vars) {
   }
 
   // Turn the poster image URI into a URL, if it isn't an URL already.
-  if (!empty($vars['poster']) && strncmp($vars['poster'], 'http://', 7) !== 0  && strncmp($vars['poster'], 'https://', 8) !== 0) {
+  if (!empty($settings['poster']) && strncmp($settings['poster'], 'http://', 7) !== 0  && strncmp($settings['poster'], 'https://', 8) !== 0) {
     if (empty($vars['posterimage_style'])) {
-      $vars['poster'] = file_create_url($vars['poster']);
+      $vars['attributes']['poster'] = file_create_url($vars['poster']);
     }
     else {
-      $vars['poster'] = image_style_url($vars['posterimage_style'], $vars['poster']);
+      $vars['attributes']['poster'] = image_style_url($vars['posterimage_style'], $settings['poster']);
     }
   }
 }
