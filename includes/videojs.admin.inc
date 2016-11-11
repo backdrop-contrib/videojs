@@ -30,13 +30,13 @@ function videojs_settings_form() {
     '#type' => 'select',
     '#title' => t('Video.js location'),
     '#options' => $locations,
-    '#default_value' => $config->get('videojs_location'),
+    '#default_value' => $config->get('location'),
   );
 
   $form['location']['videojs_directory'] = array(
     '#type' => 'textfield',
     '#title' => t('Video.js file directory'),
-    '#default_value' => $config->get('videojs_directory'),
+    '#default_value' => $config->get('directory'),
     '#description' => t('Specify the path that contains the Video.js library. The video.js file should be in the root of this directory.') . '<br/>' . t('This path can be either local (libraries/video-js) or remote (http://yourcdn.com/video-js).'),
     '#states' => array(
       'visible' => array(
@@ -107,15 +107,15 @@ function videojs_settings_form_validate($form, &$form_state) {
  */
 function videojs_settings_form_submit($form, &$form_state) {
   $config = config('videojs.settings');
-  $config->set('videojs_location', $form_state['values']['videojs_location']);
-  $config->set('videojs_directory', $form_state['values']['videojs_directory']);
+  $config->set('location', $form_state['values']['videojs_location']);
+  $config->set('directory', $form_state['values']['videojs_directory']);
   
   $options = videojs_utility::getDisplaySettingsFormResults($form_state['values']['options']);
   unset($form_state['values']['options']);
 
   // Add the results so they can get saved
   foreach ($options as $k => $v) {
-    $config->set('videojs_' . $k, $v);
+    $config->set($k, $v);
   }
   $config->save();
   if ($form_state['values']['videojs_location'] != 'cdn') {

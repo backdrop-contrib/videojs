@@ -16,12 +16,12 @@ function videojs_requirements($phase) {
     $videojs_version = videojs_get_version();
     if ($videojs_version == NULL) {
       $requirements['videojs']['value'] = t('Not found');
-      $requirements['videojs']['description'] = t('Missing the Video.js library. Please <a href="!url">download Video.js</a> and extract it into the %directory directory.', array('!url' => url('http://videojs.com'), '%directory' => $config->get('videojs_directory')));
+      $requirements['videojs']['description'] = t('Missing the Video.js library. Please <a href="!url">download Video.js</a> and extract it into the %directory directory.', array('!url' => url('http://videojs.com'), '%directory' => $config->get('directory')));
       $requirements['videojs']['severity'] = REQUIREMENT_ERROR;
     }
     elseif (version_compare($videojs_version, '4', '<')) {
       $requirements['videojs']['value'] = t('Unsupported Video.js version @version', array('@version' => $videojs_version));
-      $requirements['videojs']['description'] = t('The installed version of the Video.js library is not supported. This version of the Video.js module only supports Video.js version 4. <a href="@videojs-url">Download Video.js version 4</a> and extract it into the %directory directory or <a href="@videojs-module-url">download Video.js module version 7.x-2.x</a> to use Video.js 3.', array('@videojs-url' => url('http://videojs.com'), '%directory' => $config->get('videojs_directory'), '@videojs-module-url' => url('http://backdropcms.org/project/videojs')));
+      $requirements['videojs']['description'] = t('The installed version of the Video.js library is not supported. This version of the Video.js module only supports Video.js version 4. <a href="@videojs-url">Download Video.js version 4</a> and extract it into the %directory directory or <a href="@videojs-module-url">download Video.js module version 7.x-2.x</a> to use Video.js 3.', array('@videojs-url' => url('http://videojs.com'), '%directory' => $config->get('directory'), '@videojs-module-url' => url('http://backdropcms.org/project/videojs')));
       $requirements['videojs']['severity'] = REQUIREMENT_ERROR;
     }
     else {
@@ -46,16 +46,16 @@ function videojs_update_last_removed() {
 function videojs_update_1000() {
   // Migrate variables to config.
   $config = config('videojs.settings');
-  $config->set('videojs_location', update_variable_get('videojs_location', 'cdn'));
-  $config->set('videojs_directory', update_variable_get('videojs_directory', 'libraries/video-js'));
-  $config->set('videojs_loop', update_variable_get('videojs_loop', FALSE));
-  $config->set('videojs_hidecontrols', update_variable_get('videojs_hidecontrols', FALSE));
-  $config->set('videojs_autoplay', update_variable_get('videojs_autoplay', FALSE));
-  $config->set('videojs_width', update_variable_get('videojs_width', 640));
-  $config->set('videojs_height', update_variable_get('videojs_height', 360));
-  $config->set('videojs_preload', update_variable_get('videojs_preload', 'auto'));
-  $config->set('videojs_defaulttrack', update_variable_get('videojs_defaulttrack', ''));
-  $config->set('videojs_directory', update_variable_get('videojs_directory', 'libraries/video-js'));
+  $config->set('location', update_variable_get('videojs_location', 'cdn'));
+  $config->set('directory', update_variable_get('videojs_directory', 'libraries/video-js'));
+  $config->set('loop', update_variable_get('videojs_loop', FALSE));
+  $config->set('hidecontrols', update_variable_get('videojs_hidecontrols', FALSE));
+  $config->set('autoplay', update_variable_get('videojs_autoplay', FALSE));
+  $config->set('width', update_variable_get('videojs_width', 640));
+  $config->set('height', update_variable_get('videojs_height', 360));
+  $config->set('preload', update_variable_get('videojs_preload', 'auto'));
+  $config->set('defaulttrack', update_variable_get('videojs_defaulttrack', ''));
+  $config->set('directory', update_variable_get('videojs_directory', 'libraries/video-js'));
   $config->save();
 
   // Delete variables.

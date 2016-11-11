@@ -34,7 +34,6 @@ function videojs_config_info() {
  */
 function videojs_menu() {
   $items = array();
-
   $items['admin/config/media/videojs'] = array(
     'title' => 'Video.js',
     'page callback' => 'backdrop_get_form',
@@ -42,6 +41,11 @@ function videojs_menu() {
     'access arguments' => array('administer site configuration'),
     'description' => 'Configure the settings for the Video.js module.',
     'file' => 'includes/videojs.admin.inc',
+    'type' => MENU_NORMAL_ITEM,
+  );
+  $items['admin/config/media/videojs/settings'] = array(
+    'title' => 'Video.js',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
   );
 
   return $items;
@@ -387,9 +391,9 @@ function videojs_add($add = TRUE) {
   $added = &backdrop_static(__FUNCTION__);
   $config = config('videojs.settings');
 
-  switch ($config->get('videojs.settings', 'videojs_location')) {
+  switch ($config->get('videojs.settings', 'location')) {
     case 'path':
-      $path = $config->get('videojs.settings', 'videojs_directory');
+      $path = $config->get('videojs.settings', 'directory');
       $remote = strpos($path, '://') !== FALSE || strncmp('//', $path, 2) === 0;
       break;
 
@@ -452,12 +456,12 @@ function videojs_add($add = TRUE) {
 function videojs_get_version($path = NULL) {
   $version = NULL;
   
-  if (config_get('videojs.settings', 'videojs_location') == 'cdn') {
+  if (config_get('videojs.settings', 'location') == 'cdn') {
     return VIDEOJS_VERSION;
   }
 
   if (!isset($path)) {
-    $path = config_get('videojs.settings', 'videojs_directory');
+    $path = config_get('videojs.settings', 'directory');
   }
 
   // When admins specify a protocol-relative URL, add http because file_get_contents doesn't understand it.

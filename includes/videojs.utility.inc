@@ -98,13 +98,13 @@ class videojs_utility {
   public static function getDefaultDisplaySettings() {
     $config = config('videojs.settings');
     return array(
-      'loop' => $config->get('videojs_loop'),
-      'hidecontrols' => $config->get('videojs_hidecontrols'),
-      'autoplay' => $config->get('videojs_autoplay'),
-      'width' => $config->get('videojs_width'),
-      'height' => $config->get('videojs_height'),
-      'preload' => $config->get('videojs_preload'),
-      'defaulttrack' => $config->get('videojs_defaulttrack'),
+      'loop' => $config->get('loop'),
+      'hidecontrols' => $config->get('hidecontrols'),
+      'autoplay' => $config->get('autoplay'),
+      'width' => $config->get('width'),
+      'height' => $config->get('height'),
+      'preload' => $config->get('preload'),
+      'defaulttrack' => $config->get('defaulttrack'),
     );
   }
 
