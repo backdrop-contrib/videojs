@@ -7,7 +7,7 @@
  * formatters for CCK FileFields.
  */
 
-define(VIDEOJS_VERSION, '4.0');
+define('VIDEOJS_VERSION', '4.0');
 
 /**
  * Implements hook_autoload_info().
