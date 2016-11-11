@@ -1,10 +1,10 @@
-# Video.js support module 3 for Backdrop CMS
+# Video.js
 
 Video.js is a HTML5-based video player with a built-in Flash fallback for older browsers. This means that videos can be played on nearly all devices and operating systems, provided the right codecs are used.
 
 This module is a support module for Video.js. It doesn't contain Video.js itself, but integrates it with the File, Link and Video modules after you've installed it.
 
-## New in 7.x-3.x
+## In 1.x-3.x
 
 - Support for Video.js 4.0.0.
 - Support for subtitle tracks.
@@ -28,7 +28,7 @@ None
 1. Install the Video.js module by copying the sources to a modules directory, such as `modules`.
 2. Download the Video.js library from http://videojs.com. Extract the module to `libraries/video-js` and make sure that `libraries/video-js/video.js` exists.
    NOTE: you can skip this step and use the Video.js version from the Video.js Content Delivery Network (CDN).
-3. In your Drupal site, enable the module.
+3. In your Backdrop site, enable the module.
 4. If not yet created, create a File field for one of your content types at Structure -> Content types -> [type] -> Manage fields. Make sure the allowed extensions contain only HTML5 video extensions, such as mp4,  webm, mov and ogv. Use the `Number of values` setting to allow users to upload alternative versions of the same video, for instance MP4 and Ogg. To allow users to upload a poster image, also allow png, gif or jpg.
 5. At the Manage display tab, select `Video.js` for your File field.
 6. Create a piece of content with the configured field.
@@ -123,5 +123,20 @@ The Video.js module exposes the theme function 'videojs' to write a Video.js pla
 
 ## Support
 
-- Report bugs for this *Drupal module* at `<http://drupal.org/project/issues/videojs>`.
-- Report bugs for the *player* at <https://github.com/videojs/video.js/issues>.
+- Report bugs for this *Backdrop module* at `<https://github.com/backdrop-contrib/videojs>`.
+- Report bugs for the *player* at `<https://github.com/videojs/video.js/issues>`.
+
+## License
+
+This project is GPL v2 software. See the LICENSE.txt file in this directory for complete text.
+
+## Maintainers
+
+- Herb v/d Dool (https://github.com/herbdool/)
+
+Originally written for Drupal by
+
+- Heshan Wanigasooriya (https://www.drupal.org/u/heshanlk)
+- Jorrit Schippers (https://www.drupal.org/u/jorrit)
+
+This module is seeking additional maintainers.
