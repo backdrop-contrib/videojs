@@ -96,14 +96,15 @@ class videojs_utility {
   }
 
   public static function getDefaultDisplaySettings() {
+    $config = config('videojs.settings');
     return array(
-      'loop' => variable_get('videojs_loop', FALSE),
-      'hidecontrols' => variable_get('videojs_hidecontrols', FALSE),
-      'autoplay' => variable_get('videojs_autoplay', FALSE),
-      'width' => variable_get('videojs_width', 640),
-      'height' => variable_get('videojs_height', 360),
-      'preload' => variable_get('videojs_preload', 'auto'),
-      'defaulttrack' => variable_get('videojs_defaulttrack', ''),
+      'loop' => $config->get('videojs_loop'),
+      'hidecontrols' => $config->get('videojs_hidecontrols'),
+      'autoplay' => $config->get('videojs_autoplay'),
+      'width' => $config->get('videojs_width'),
+      'height' => $config->get('videojs_height'),
+      'preload' => $config->get('videojs_preload'),
+      'defaulttrack' => $config->get('videojs_defaulttrack'),
     );
   }
 
@@ -141,8 +142,8 @@ class videojs_utility {
       return NULL;
     }
 
-    include_once DRUPAL_ROOT . '/includes/iso.inc';
-    $languages = _locale_get_predefined_list();
+    include_once BACKDROP_ROOT . 'core/includes/standard.inc';
+    $languages = standard_language_list();
 
     // Try to match on language code.
     if (strlen($input) === 2 && isset($languages[strtolower($input)])) {
@@ -241,7 +242,7 @@ class videojs_utility {
           $title = '';
         }
         else {
-          $mime = DrupalLocalStreamWrapper::getMimeType($link['url']);
+          $mime = BackdropLocalStreamWrapper::getMimeType($link['url']);
 
           // If the mime type is application/octet-stream, use the default.
           // This happens for instance for links without extensions.

@@ -1,7 +1,8 @@
 name = Video.js
 description = Video.js is an HTML5 Video Player.
 package = Media
-core = 7.x
+backdrop = 1.x
+type = module
 configure = admin/config/media/videojs
 
 files[] = includes/videojs.utility.inc

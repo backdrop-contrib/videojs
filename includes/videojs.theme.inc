@@ -100,7 +100,7 @@ function videojs_preprocess_videojs_media_wysiwyg_preview(&$vars) {
   // This theme function should only be used by the media module, so assume
   // it is loaded.
   if (empty($vars['poster'])) {
-    $poster = drupal_get_path('module', 'media') . '/images/icons/default/video-x-generic.png';
+    $poster = backdrop_get_path('module', 'media') . '/images/icons/default/video-x-generic.png';
     $raw = file_create_url($poster);
     $vars['poster'] = array('raw' => $raw, 'safe' => check_plain($raw));
   }

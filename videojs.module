@@ -7,6 +7,28 @@
  * formatters for CCK FileFields.
  */
 
+define(VIDEOJS_VERSION, '4.0');
+
+/**
+ * Implements hook_autoload_info().
+ */
+function videojs_autoload_info() {
+  return array(
+    'videojs_utility' => 'includes/videojs.utility.inc',
+  );
+}
+
+/**
+ * Implements hook_config_info().
+ */
+function videojs_config_info() {
+  $prefixes['videojs.settings'] = array(
+    'label' => t('Videojs Settings'),
+    'group' => t('Configuration'),
+  );
+  return $prefixes;
+}
+
 /**
  * Implements hook_menu().
  */
@@ -15,7 +37,7 @@ function videojs_menu() {
 
   $items['admin/config/media/videojs'] = array(
     'title' => 'Video.js',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => array('videojs_settings_form'),
     'access arguments' => array('administer site configuration'),
     'description' => 'Configure the settings for the Video.js module.',
@@ -229,7 +251,7 @@ function videojs_field_formatter_settings_form($field, $instance, $view_mode, $f
   }
   elseif (isset($form['#file_type'])) {
     // The file entity module does not supply the entity type and bundle like
-    // Drupal core does.
+    // Backdrop core does.
     // @todo: file a feature request.
     $entity_type = 'file';
     $bundle = $form['#file_type'];
@@ -297,7 +319,7 @@ function videojs_field_formatter_settings_form($field, $instance, $view_mode, $f
 }
 
 function videojs_field_formatter_settings_form_validate($form, &$form_state) {
-  $value = drupal_array_get_nested_value($form_state['values'], $form['#parents']);
+  $value = backdrop_array_get_nested_value($form_state['values'], $form['#parents']);
   $options = videojs_utility::getDisplaySettingsFormResults($value);
   $value = array_merge($value, $options);
 
@@ -311,7 +333,7 @@ function videojs_field_formatter_settings_form_validate($form, &$form_state) {
     $value['height'] = NULL;
   }
 
-  drupal_array_set_nested_value($form_state['values'], $form['#parents'], $value);
+  backdrop_array_set_nested_value($form_state['values'], $form['#parents'], $value);
 }
 
 /**
@@ -362,11 +384,12 @@ function videojs_field_formatter_settings_summary($field, $instance, $view_mode)
  * Add the Video.js library to the page.
  */
 function videojs_add($add = TRUE) {
-  $added = &drupal_static(__FUNCTION__);
+  $added = &backdrop_static(__FUNCTION__);
+  $config = config('videojs.settings');
 
-  switch (variable_get('videojs_location', 'cdn')) {
+  switch ($config->get('videojs.settings', 'videojs_location')) {
     case 'path':
-      $path = variable_get('videojs_directory', 'sites/all/libraries/video-js');
+      $path = $config->get('videojs.settings', 'videojs_directory');
       $remote = strpos($path, '://') !== FALSE || strncmp('//', $path, 2) === 0;
       break;
 
@@ -383,7 +406,7 @@ function videojs_add($add = TRUE) {
 
     case 'cdn':
     default:
-      $path = '//vjs.zencdn.net/4.0';
+      $path = '//vjs.zencdn.net/' . VIDEOJS_VERSION;
       $remote = TRUE;
   }
 
@@ -395,9 +418,9 @@ function videojs_add($add = TRUE) {
   $swfopts = array('group' => JS_LIBRARY, 'type' => 'inline', 'weight' => 5);
 
   if ($add && !$added) {
-    drupal_add_js($jsdata, $jsopts);
-    drupal_add_css($cssdata, $cssopts);
-    drupal_add_js($swfdata, $swfopts);
+    backdrop_add_js($jsdata, $jsopts);
+    backdrop_add_css($cssdata, $cssopts);
+    backdrop_add_js($swfdata, $swfopts);
 
     $added = TRUE;
   }
@@ -418,7 +441,7 @@ function videojs_add($add = TRUE) {
  *
  * @param $path
  *   The path to check for a Video.js installation. This can be a local path
- *   like sites/all/libraries/video-js or a remote path like
+ *   like libraries/video-js or a remote path like
  *   http://mycdn.com/videojs. Do not add a trailing slash.
  *   Defaults to videojs_directory when using the local file path location
  *   or whatever location the Libraries API determines.
@@ -428,9 +451,13 @@ function videojs_add($add = TRUE) {
  */
 function videojs_get_version($path = NULL) {
   $version = NULL;
+  
+  if (config_get('videojs.settings', 'videojs_location') == 'cdn') {
+    return VIDEOJS_VERSION;
+  }
 
   if (!isset($path)) {
-    $path = variable_get('videojs_directory', 'sites/all/libraries/video-js');
+    $path = config_get('videojs.settings', 'videojs_directory');
   }
 
   // When admins specify a protocol-relative URL, add http because file_get_contents doesn't understand it.

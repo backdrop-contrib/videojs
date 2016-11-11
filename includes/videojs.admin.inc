@@ -9,6 +9,7 @@
  */
 function videojs_settings_form() {
   $form = array();
+  $config = config('videojs.settings');
 
   $form['location'] = array(
     '#type' => 'fieldset',
@@ -29,14 +30,14 @@ function videojs_settings_form() {
     '#type' => 'select',
     '#title' => t('Video.js location'),
     '#options' => $locations,
-    '#default_value' => variable_get('videojs_location', 'cdn'),
+    '#default_value' => $config->get('videojs_location'),
   );
 
   $form['location']['videojs_directory'] = array(
     '#type' => 'textfield',
     '#title' => t('Video.js file directory'),
-    '#default_value' => variable_get('videojs_directory', 'sites/all/libraries/video-js'),
-    '#description' => t('Specify the path that contains the Video.js library. The video.js file should be in the root of this directory.') . '<br/>' . t('This path can be either local (sites/all/libraries/video-js) or remote (http://yourcdn.com/video-js).'),
+    '#default_value' => $config->get('videojs_directory'),
+    '#description' => t('Specify the path that contains the Video.js library. The video.js file should be in the root of this directory.') . '<br/>' . t('This path can be either local (libraries/video-js) or remote (http://yourcdn.com/video-js).'),
     '#states' => array(
       'visible' => array(
         ':input[name="videojs_location"]' => array('value' => 'path'),
@@ -56,7 +57,14 @@ function videojs_settings_form() {
   $form['#validate'][] = 'videojs_settings_form_validate';
   $form['#submit'][] = 'videojs_settings_form_submit';
 
-  return system_settings_form($form);
+  // Add a submit button
+  $form['actions']['#type'] = 'actions';
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save configuration'),
+  );
+
+  return $form;
 }
 
 /**
@@ -98,21 +106,19 @@ function videojs_settings_form_validate($form, &$form_state) {
  * Submit handler for the videojs_settings_form() form.
  */
 function videojs_settings_form_submit($form, &$form_state) {
+  $config = config('videojs.settings');
+  $config->set('videojs_location', $form_state['values']['videojs_location']);
+  $config->set('videojs_directory', $form_state['values']['videojs_directory']);
+  
   $options = videojs_utility::getDisplaySettingsFormResults($form_state['values']['options']);
   unset($form_state['values']['options']);
 
-  // Add the results to the form state so they will be saved by the system
-  // settings form submit handler.
+  // Add the results so they can get saved
   foreach ($options as $k => $v) {
-    if (!empty($v)) {
-      $form_state['values']['videojs_' . $k] = $v;
-    }
-    else {
-      variable_del('videojs_' . $k);
-    }
+    $config->set('videojs_' . $k, $v);
   }
-
+  $config->save();
   if ($form_state['values']['videojs_location'] != 'cdn') {
-    drupal_set_message(t('The Video.js library (version @version) was successfully found at %directory.', array('@version' => $form_state['videojs_version'], '%directory' => $form_state['videojs_directory'])));
+    backdrop_set_message(t('The Video.js library (version @version) was successfully found at %directory.', array('@version' => $form_state['videojs_version'], '%directory' => $form_state['videojs_directory'])));
   }
 }

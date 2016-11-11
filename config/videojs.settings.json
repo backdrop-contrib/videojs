@@ -1,0 +1,12 @@
+{
+    "_config_name": "videojs.settings",
+    "videojs_location": "cdn",
+    "videojs_directory": "libraries/video-js",
+    "videojs_width": 640,
+    "videojs_height": 360,
+    "videojs_preload": "auto",
+    "videojs_hidecontrols": false,
+    "videojs_loop": false,
+    "videojs_autoplay": false,
+    "videojs_defaulttrack": null
+}
