@@ -57,13 +57,13 @@ function videojs_menu() {
 function videojs_theme() {
   return array(
     'videojs' => array(
-      'variables' => array('items' => NULL, 'player_id' => NULL, 'attributes' => NULL, 'entity' => NULL, 'entity_type' => NULL, 'posterimage_style' => NULL),
+      'variables' => array('items' => NULL, 'player_id' => NULL, 'video_attributes' => NULL, 'entity' => NULL, 'entity_type' => NULL, 'posterimage_style' => NULL),
       'template' => 'theme/videojs',
       'file' => 'includes/videojs.theme.inc',
     ),
     // Special theme function for use in wysiwyg editors via the media module.
     'videojs_media_wysiwyg_preview' => array(
-      'variables' => array('items' => NULL, 'player_id' => NULL, 'attributes' => NULL, 'entity' => NULL, 'entity_type' => NULL, 'posterimage_style' => NULL),
+      'variables' => array('items' => NULL, 'player_id' => NULL, 'video_attributes' => NULL, 'entity' => NULL, 'entity_type' => NULL, 'posterimage_style' => NULL),
       'template' => 'theme/videojs-media-wysiwyg-preview',
       'file' => 'includes/videojs.theme.inc',
     ),

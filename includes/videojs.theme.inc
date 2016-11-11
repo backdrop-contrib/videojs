@@ -26,8 +26,8 @@ function videojs_preprocess_videojs(&$vars) {
     'application/vnd.apple.mpegurl' => 'application/vnd.apple.mpegurl', // .m3u8
   );
 
-  // Add the defaults to $vars['attributes'] and merge with $vars.
-  $options = videojs_utility::getDisplaySettings($vars['attributes']);
+  // Add the defaults to $vars['video_attributes'] and merge with $vars.
+  $options = videojs_utility::getDisplaySettings($vars['video_attributes']);
   $vars = array_merge($vars, $options);
   $vars['items'] = array();
   $vars['tracks'] = array();
