@@ -7,7 +7,7 @@
  * formatters for CCK FileFields.
  */
 
-define('VIDEOJS_VERSION', '4.0');
+define('VIDEOJS_DEFAULT_VERSION', '4.0');
 
 /**
  * Implements hook_autoload_info().
@@ -391,12 +391,11 @@ function videojs_add($add = TRUE) {
   $added = &backdrop_static(__FUNCTION__);
   $config = config('videojs.settings');
 
-  switch ($config->get('videojs.settings', 'location')) {
+  switch ($config->get('location')) {
     case 'path':
-      $path = $config->get('videojs.settings', 'directory');
+      $path = $config->get('directory');
       $remote = strpos($path, '://') !== FALSE || strncmp('//', $path, 2) === 0;
       break;
-
     case 'libraries':
       if (!module_exists('libraries')) {
         return FALSE;
@@ -410,7 +409,7 @@ function videojs_add($add = TRUE) {
 
     case 'cdn':
     default:
-      $path = '//vjs.zencdn.net/' . VIDEOJS_VERSION;
+      $path = '//vjs.zencdn.net/' . VIDEOJS_DEFAULT_VERSION;
       $remote = TRUE;
   }
 
@@ -455,9 +454,10 @@ function videojs_add($add = TRUE) {
  */
 function videojs_get_version($path = NULL) {
   $version = NULL;
+  $config = config('videojs.settings');
   
-  if (config_get('videojs.settings', 'location') == 'cdn') {
-    return VIDEOJS_VERSION;
+  if ($config->get('location') == 'cdn') {
+    return VIDEOJS_DEFAULT_VERSION;
   }
 
   if (!isset($path)) {
@@ -474,7 +474,7 @@ function videojs_get_version($path = NULL) {
   $contents = @file_get_contents($path . '/video.js', FALSE, NULL, 0, 400);
   if (!empty($contents)) {
     $matches = array();
-    if (preg_match('/(?:v[ ]*|Version )([\d.]{2,})/i', $contents, $matches)) {
+    if (preg_match('/(?:v[ ]*|Video.js )([\d.]{2,})/i', $contents, $matches)) {
       $version = $matches[1];
     }
   }

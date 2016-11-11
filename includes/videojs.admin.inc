@@ -95,7 +95,7 @@ function videojs_settings_form_validate($form, &$form_state) {
   }
 
   if (!empty($form_state['videojs_version']) && version_compare($form_state['videojs_version'], '4', '<')) {
-    form_error($form['location']['videojs_location'], t('Version @version of Video.js was found, but this version is not supported. Use version 4 of the Video.js player or another version of the Video.js module.', array('@version' => $form_state['videojs_version'])));
+    form_error($form['location']['videojs_location'], t('Version @version of Video.js was found, but this version is not supported. Use version 4 of the Video.js player or higher.', array('@version' => $form_state['videojs_version'])));
   }
 }
 

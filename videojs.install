@@ -21,7 +21,7 @@ function videojs_requirements($phase) {
     }
     elseif (version_compare($videojs_version, '4', '<')) {
       $requirements['videojs']['value'] = t('Unsupported Video.js version @version', array('@version' => $videojs_version));
-      $requirements['videojs']['description'] = t('The installed version of the Video.js library is not supported. This version of the Video.js module only supports Video.js version 4. <a href="@videojs-url">Download Video.js version 4</a> and extract it into the %directory directory or <a href="@videojs-module-url">download Video.js module version 7.x-2.x</a> to use Video.js 3.', array('@videojs-url' => url('http://videojs.com'), '%directory' => $config->get('directory'), '@videojs-module-url' => url('http://backdropcms.org/project/videojs')));
+      $requirements['videojs']['description'] = t('The installed version of the Video.js library is not supported. This version of the Video.js module only supports Video.js version 4 or higher. <a href="@videojs-url">Download Video.js version 4</a> and extract it into the %directory directory.', array('@videojs-url' => url('http://videojs.com'), '%directory' => $config->get('directory')));
       $requirements['videojs']['severity'] = REQUIREMENT_ERROR;
     }
     else {
