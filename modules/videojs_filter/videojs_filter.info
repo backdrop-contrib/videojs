@@ -1,0 +1,7 @@
+name = VideoJS Filter
+description = Provides a filter so videos can be inserted into any entity with a textarea field: nodes, blocks and so on. 
+dependencies[] = videojs
+configure = admin/config/media/videojs_filter
+package = Media
+backdrop = 1.x
+type = module

@@ -1,0 +1,196 @@
+<?php
+/**
+* @file
+* 
+*/
+
+/**
+ * Implements hook_config_info().
+ */
+function videojs_filter_config_info() {
+  $prefixes['videojs_filter.settings'] = array(
+    'label' => t('Videojs Filter'),
+    'group' => t('Configuration'),
+  );
+  return $prefixes;
+}
+
+/*
+ * Implements hook_menu().
+ */
+function videojs_filter_menu() {
+  
+  $items = array();
+
+  $items['admin/config/media/videojs/videojs_filter'] = array(
+    'title' => 'VideoJS Filter',
+    'page callback' => 'backdrop_get_form',
+    'page arguments' => array('videojs_filter_settings_form'),
+    'access arguments' => array('administer site configuration'),
+    'description' => 'Configure the settings for the VideoJS Filter module.',
+    'type' => MENU_LOCAL_TASK,
+  );
+  
+  return $items;
+}
+
+/**
+*  create settings form
+* 
+*/
+function videojs_filter_settings_form() {
+  $config = config('videojs_filter.settings');
+  $form = array();
+  
+  $form['videojs_filter_poster_file'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Default poster file'),
+    '#description' => t('Use path to the poster file relative to the files directory. E.g. videos/myposter.png'),
+    '#default_value' => $config->get('poster_file'),
+    '#required' => FALSE,
+  );
+
+  $form['videojs_filter_width'] = array(
+    '#type' => 'number',
+    '#title' => t('Default player width'),
+    '#description' => t('Set if you wish the default width to be different from the core Video.js module.'),
+    '#default_value' => $config->get('width'),
+    '#required' => FALSE,
+    '#min' => 0,
+  );
+
+  $form['videojs_filter_height'] = array(
+    '#type' => 'number',
+    '#title' => t('Default player height'),
+    '#description' => t('Set if you wish the default height to be different from the core Video.js module.'),
+    '#default_value' => $config->get('height'),
+    '#required' => FALSE,
+    '#min' => 0,
+  );
+
+  $form['actions']['#type'] = 'actions';
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save configuration'),
+  );
+
+  return $form;
+}
+
+/**
+ * Validation function to validate the videojs_filter_settings_form() form.
+ */
+function videojs_filter_settings_form_validate($form, &$form_state) {
+
+    $poster_file = $form_state['values']['videojs_filter_poster_file'];
+    if (!file_exists( backdrop_realpath('public://') . '/' . $poster_file)) {
+        form_error($form['videojs_filter_poster_file'], t('The default poster file does not exist.'));
+    }
+}
+
+/**
+ * Submit handler for the videojs_filter_settings_form() form.
+ */
+function videojs_filter_settings_form_submit($form, &$form_state) {
+  $config = config('videojs_filter.settings');
+  $config->set('poster_file', $form_state['values']['videojs_filter_poster_file']);
+  $config->set('width', $form_state['values']['videojs_filter_width']);
+  $config->set('height', $form_state['values']['videojs_filter_height']);
+  $config->save();
+}
+
+/*
+ * Implements hook_filter_info().
+ */
+function videojs_filter_filter_info() {
+  
+  $filters['videojs_filter'] = array(
+    'title' => t('VideoJS Filter'),
+    'description' => t('To embed a video file add the token with format [videojs:VIDEOFILE|poster:POSTERFILE|width:WIDTH|height:WIDTH]. Replace the capitalized parts with values. Only VIDEOFILE is required; the rest will be filled in the defaults. Example: [videojs:mycatvideo.mp4]'),
+    'prepare callback' => '_videojs_filter_filter_prepare',
+    'process callback' => '_videojs_filter_filter_process',
+    'tips callback' => '_videojs_filter_filter_tips',
+  );
+
+  return $filters;
+}
+
+/**
+* filter prepare callback.
+*/
+function _videojs_filter_filter_prepare($text, $filter) {
+  return $text;
+}
+
+/**
+ * Time filter process callback.
+ */
+function _videojs_filter_filter_process($text, $filter) {
+  $config = config('videojs_filter.settings');
+  preg_match_all("/(\[)videojs(\:)[^\]]*(\])/s", $text, $matches);
+  $orig_match = array();
+  $html_code = array();
+  $public_uri = 'public://';
+  $poster_file = file_exists( backdrop_realpath($public_uri) . '/' . $config->get('poster_file')) ? $config->get('poster_file') : '';
+  $player_width = $config->get('width');
+  $player_height = $config->get('height');
+  $i = 0;
+  foreach ($matches[0] as $match) {
+    $attr = array();
+    $file = array();
+    $orig_match[] = $match;
+    $match = str_replace( array('[', ']', '{', '}'), '', $match );
+    $options = explode('|', $match);
+    foreach ($options as $index => $opt) {
+        $tmp = explode(':', $opt);
+        $attr[$tmp[0]] = trim($tmp[1]);
+    }
+    if (isset($attr['videojs'])) {
+        $file_ext = pathinfo($attr['videojs']);
+        $uri = $public_uri . $attr['videojs'];
+        
+        $file['uid'] = 1;
+        $file['display'] = 1;
+        $file['filename'] = $attr['videojs'];
+        $file['filemime'] = 'video/' . $file_ext['extension'];
+        $file['filesize'] = filesize($uri);
+        $file['uri'] = $uri;
+        $file['status'] = 1;
+        if (!empty($poster_file)) {
+          $file_poster['uri'] = $public_uri  . $poster_file;
+        }
+        if (!empty($attr['poster'])) {
+          $file_poster['uri'] = $public_uri  . $attr['poster'];
+        }
+        if (!empty($file_poster['uri'])) {
+          $file_ext = pathinfo($file_poster['uri']);
+          $file_poster['filemime'] = 'image/' . $file_ext['extension'];
+        }
+        $items_video['mp4'] = $file;
+        if (!empty($file_poster)) {
+          $items_video['poster'] =  $file_poster;
+        }
+        $attributes['width']  = (isset($attr['width'] )) ?  $attr['width'] : $player_width;
+        $attributes['height'] = (isset($attr['height'])) ?  $attr['height'] : $player_height;
+        $html_code[] = '<div id="videojs-filter-wrapper-video-' . $i . '">' . theme('videojs', array('items' => $items_video, 'player_id' => 'videojs-header-' . $i, 'video_attributes' => $attributes)) . '</div>';
+        $i++;
+     } 
+  } 
+  $text = str_replace($orig_match, $html_code, $text);
+  return $text;
+}
+
+/**
+*  Tips
+*/
+function _videojs_filter_filter_tips($filter, $format, $long = FALSE) {
+
+  return t('To embed a video file add the token with format <em>[videojs:VIDEOFILE|poster:POSTERFILE|width:WIDTH|height:WIDTH]</em>. Replace the capitalized parts with values. Only VIDEOFILE is required; the rest will be filled in the defaults. Example: [videojs:mycatvideo.mp4].');
+}
+
+/*
+ * Implements hook_init().
+ */
+function videojs_init() {
+  videojs_add();
+}
