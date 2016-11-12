@@ -4,14 +4,16 @@ Video.js is a HTML5-based video player with a built-in Flash fallback for older 
 
 This module is a support module for Video.js. It doesn't contain Video.js itself, but integrates it with the File, Link and Video modules after you've installed it.
 
-## In 1.x-3.x
+## Includes
 
-- Support for Video.js 4.0.0.
+- Support for Video.js 4.0.0+
 - Support for subtitle tracks.
 - Support for looping, hiding player controls and changing preload behavior.
 - Setup above settings for each field and view individually, as well as width and height of the player.
-- Load the Video.js files from the Video.js CDN - downloading and installing the player is no longer necessary!
+- Load the Video.js files from the Video.js CDN - downloading and installing the player is not necessary.
 - Locate the Video.js files using the Libraries API.
+- Sub-module: Video.js HTTP Live Streaming. Extends the functionality of Video.js by combining multiple m3u8 files into one file that can be used for bandwidth switching.
+- Sub-module: VideoJS Filter. Provides a filter so videos can be inserted into any entity with a textarea field: nodes, blocks and so on.
 
 ## Required dependencies
 
