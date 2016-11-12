@@ -110,7 +110,7 @@ function videojs_preprocess_videojs(&$vars) {
   // Turn the poster image URI into a URL, if it isn't an URL already.
   if (!empty($settings['poster']) && strncmp($settings['poster'], 'http://', 7) !== 0  && strncmp($settings['poster'], 'https://', 8) !== 0) {
     if (empty($vars['posterimage_style'])) {
-      $vars['attributes']['poster'] = file_create_url($vars['poster']);
+      $vars['attributes']['poster'] = file_create_url($settings['poster']);
     }
     else {
       $vars['attributes']['poster'] = image_style_url($vars['posterimage_style'], $settings['poster']);
