@@ -44,8 +44,8 @@ function videojs_filter_settings_form() {
   
   $form['videojs_filter_poster_file'] = array(
     '#type' => 'textfield',
-    '#title' => t('Default poster file'),
-    '#description' => t('Use path to the poster file relative to the files directory. E.g. videos/myposter.png'),
+    '#title' => t('Default poster image'),
+    '#description' => t('Use path to the poster file relative to the files directory. E.g. videos/myposter.png. This image will override any poster image embedded in the video but can be overridden in individual tokens.'),
     '#default_value' => $config->get('poster_file'),
     '#required' => FALSE,
   );
