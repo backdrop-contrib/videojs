@@ -14,10 +14,18 @@ function videojs_hls_install() {
 }
 
 /**
- * Implements hook_uninstall().
+ * Move Videojs HLS settings from variables to config.
  */
-function videojs_hls_uninstall() {
-  variable_del('videojs_hls_delivery_type');
-  variable_del('videojs_hls_delivery_static_scheme');
-  variable_del('videojs_hls_delivery_static_path');
+function videojs_hls_update_1000() {
+  // Migrate variables to config.
+  $config = config('videojs_hls.settings');
+  $config->set('delivery_type', update_variable_get('videojs_hls_delivery_type', 'dynamic'));
+  $config->set('delivery_static_scheme', update_variable_get('videojs_hls_delivery_static_scheme', 'public'));
+  $config->set('delivery_static_path', update_variable_get('videojs_hls_delivery_static_path', 'm3u8'));
+  $config->save();
+
+  // Delete variables.
+  update_variable_del('videojs_hls_delivery_type');
+  update_variable_del('videojs_hls_delivery_static_scheme');
+  update_variable_del('videojs_hls_delivery_static_path');
 }

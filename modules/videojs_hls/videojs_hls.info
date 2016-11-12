@@ -1,7 +1,8 @@
 name = Video.js HTTP Live Streaming
 description = Extends the functionality of Video.js by combining multiple m3u8 files into one file that can be used for bandwidth switching.
 package = Media
-core = 7.x
+backdrop = 1.x
+type = module
 dependencies[] = videojs
 
 configure = admin/config/media/videojs
